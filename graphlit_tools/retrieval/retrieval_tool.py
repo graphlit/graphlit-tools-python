@@ -17,8 +17,8 @@ class RetrievalTool(BaseTool):
 
     _graphlit: Graphlit = PrivateAttr()
 
-    def __init__(self, graphlit: Optional[Graphlit] = None):
-        super().__init__()
+    def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
+        super().__init__(**kwargs)
         self._graphlit = graphlit or Graphlit()
 
     async def _arun(self, content_filter: ContentFilter) -> Optional[List[QueryContentsContentsResults]]:
