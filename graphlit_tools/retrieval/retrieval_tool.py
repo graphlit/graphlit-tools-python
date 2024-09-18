@@ -3,7 +3,6 @@ import logging
 from typing import Type, List, Optional
 from graphlit import Graphlit
 from graphlit_api import exceptions, ContentFilter, QueryContentsContentsResults
-from langchain_core.pydantic_v1 import Field
 from langchain_core.tools import BaseTool, ToolException
 
 logger = logging.getLogger(__name__)
@@ -14,8 +13,6 @@ class RetrievalTool(BaseTool):
     Can search through web pages, PDFs, and other unstructured data.
     Filters can include query, date ranges, content types, and other criteria."""
     args_schema: Type[ContentFilter] = ContentFilter
-
-    graphlit: Graphlit = Field(exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None):
         super().__init__()
