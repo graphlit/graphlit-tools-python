@@ -24,7 +24,7 @@ class RetrievalTool(BaseTool):
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
 
-    async def _arun(self, search: Optional[str] = None, limit: Optional[int] = None) -> Optional[List[QueryContentsContentsResults]]:
+    async def _arun(self, search: Optional[str] = None, limit: Optional[int] = None) -> Optional[str]:
         try:
             response = await self.graphlit.client.query_contents(
                 filter=input_types.ContentFilter(
@@ -34,12 +34,15 @@ class RetrievalTool(BaseTool):
                 )
             )
 
-            return response.contents.results if response.contents is not None else None
+            if response.contents is None or response.contents.results is None:
+                return None
+            
+            return "\n\n".join([result.markdown for result in response.contents.results])
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, search: Optional[str] = None, limit: Optional[int] = None) -> Optional[List[QueryContentsContentsResults]]:
+    def _run(self, search: Optional[str] = None, limit: Optional[int] = None) -> Optional[str]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
