@@ -20,9 +20,14 @@ class WebSearchTool(BaseTool):
 
     graphlit: Graphlit = Field(None, exclude=True)
 
-    def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
+    workflow_id: Optional[str] = Field(None, exclude=True)
+    correlation_id: Optional[str] = Field(None, exclude=True)
+
+    def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
+        self.workflow_id = workflow_id
+        self.correlation_id = correlation_id
 
     async def _arun(self, search: str, read_limit: Optional[int] = None) -> Optional[str]:
         try:
@@ -33,8 +38,10 @@ class WebSearchTool(BaseTool):
                         type=enums.SearchServiceTypes.TAVILY,
                         text=search,
                         readLimit=read_limit
-                    )
-                )
+                    ),
+                    workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
+                ),
+                correlation_id=self.correlation_id
             )
 
             feed_id = response.create_feed.id if response.create_feed is not None else None

@@ -2,7 +2,7 @@ import asyncio
 import logging
 from typing import Type, Optional
 from graphlit import Graphlit
-from graphlit_api import exceptions
+from graphlit_api import exceptions, enums, input_types
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 
@@ -19,15 +19,22 @@ class IngestTool(BaseTool):
 
     graphlit: Graphlit = Field(None, exclude=True)
 
-    def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
+    workflow_id: Optional[str] = Field(None, exclude=True)
+    correlation_id: Optional[str] = Field(None, exclude=True)
+
+    def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
+        self.workflow_id = workflow_id
+        self.correlation_id = correlation_id
 
     async def _arun(self, uri: str) -> Optional[str]:
         try:
             response = await self.graphlit.client.ingest_uri(
                 uri=uri,
-                is_synchronous=True
+                workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
+                is_synchronous=True,
+                correlation_id=self.correlation_id
             )
 
             content_id = response.ingest_uri.id if response.ingest_uri is not None else None
