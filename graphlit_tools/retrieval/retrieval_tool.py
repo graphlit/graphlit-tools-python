@@ -4,7 +4,7 @@ from typing import Type, List, Optional
 from graphlit import Graphlit
 from graphlit_api import exceptions, ContentFilter, QueryContentsContentsResults
 from langchain_core.tools import BaseTool, ToolException
-from pydantic import PrivateAttr
+from pydantic import PrivateAttr, ConfigDict
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,9 @@ class RetrievalTool(BaseTool):
     args_schema: Type[ContentFilter] = ContentFilter
 
     _graphlit = PrivateAttr()
+
+    # Configure the model to allow extra fields
+    model_config = ConfigDict(extra='allow')
 
     def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
         super().__init__(**kwargs)
