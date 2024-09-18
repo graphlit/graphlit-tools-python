@@ -39,13 +39,13 @@ class RetrievalTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, content_filter: ContentFilter) -> Optional[List[QueryContentsContentsResults]]:
+    def _run(self, search: Optional[str] = None, limit: Optional[int] = None) -> Optional[List[QueryContentsContentsResults]]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                future = asyncio.ensure_future(self._arun(content_filter))
+                future = asyncio.ensure_future(self._arun(search, limit))
                 return loop.run_until_complete(future)
             else:
-                return loop.run_until_complete(self._arun(content_filter))
+                return loop.run_until_complete(self._arun(search, limit))
         except RuntimeError:
-            return asyncio.run(self._arun(content_filter))
+            return asyncio.run(self._arun(search, limit))
