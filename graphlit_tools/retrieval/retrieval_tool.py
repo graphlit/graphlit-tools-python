@@ -1,8 +1,8 @@
 import asyncio
 import logging
-from typing import Type, List, Optional
+from typing import Type, Optional
 from graphlit import Graphlit
-from graphlit_api import exceptions, enums, input_types, QueryContentsContentsResults
+from graphlit_api import exceptions, enums, input_types
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 
@@ -13,8 +13,8 @@ class RetrievalInput(BaseModel):
     limit: Optional[int] = Field(description="Number of contents to return from search query")
 
 class RetrievalTool(BaseTool):
-    name = "retrieval"
-    description = """Retrieves content based on similarity search from knowledge base.
+    name = "Retrieval"
+    description = """Retrieves contents based on similarity search from knowledge base. Returns Markdown extracted from contents.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
 
