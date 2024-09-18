@@ -36,7 +36,7 @@ class RetrievalTool(BaseTool):
 
             if response.contents is None or response.contents.results is None:
                 return None
-            
+
             return "\n\n".join([result.markdown for result in response.contents.results])
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))

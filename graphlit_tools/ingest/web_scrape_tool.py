@@ -48,6 +48,9 @@ class WebScrapeTool(BaseTool):
                 while not done:
                     done = await self.is_feed_done(feed_id)
 
+                    if done is None:
+                        break
+
                     if not done:
                         time.sleep(2)
 
@@ -75,7 +78,7 @@ class WebScrapeTool(BaseTool):
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:
-            return;
+            return None
 
         response = await self.graphlit.client.is_feed_done(feed_id)
 
@@ -83,7 +86,7 @@ class WebScrapeTool(BaseTool):
 
     async def query_contents(self, feed_id: str):
         if self.graphlit.client is None:
-            return;
+            return None
 
         try:
             response = await self.graphlit.client.query_contents(
