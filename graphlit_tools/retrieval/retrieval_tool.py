@@ -2,18 +2,21 @@ import asyncio
 import logging
 from typing import Type, List, Optional
 from graphlit import Graphlit
-from graphlit_api import exceptions, ContentFilter, QueryContentsContentsResults
+from graphlit_api import exceptions, enums, input_types, QueryContentsContentsResults
 from langchain_core.tools import BaseTool, ToolException
-from pydantic import Field, ConfigDict
+from pydantic import Field, BaseModel
 
 logger = logging.getLogger(__name__)
 
+class RetrievalInput(BaseModel):
+    search: Optional[str] = Field(description="Text to search for in contents")
+    limit: Optional[int] = Field(description="Number of contents to return from search query")
+
 class RetrievalTool(BaseTool):
     name = "retrieval"
-    description = """Retrieves content based on a ContentFilter.
-    Can search through web pages, PDFs, and other unstructured data.
-    Filters can include query, date ranges, content types, and other criteria."""
-    args_schema: Type[ContentFilter] = ContentFilter
+    description = """Retrieves content based on similarity search from knowledge base.
+    Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
+    args_schema: Type[BaseModel] = RetrievalInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
@@ -21,10 +24,14 @@ class RetrievalTool(BaseTool):
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
 
-    async def _arun(self, content_filter: ContentFilter) -> Optional[List[QueryContentsContentsResults]]:
+    async def _arun(self, search: Optional[str] = None, limit: Optional[int] = None) -> Optional[List[QueryContentsContentsResults]]:
         try:
             response = await self.graphlit.client.query_contents(
-                filter=content_filter
+                filter=input_types.ContentFilter(
+                    search=search,
+                    searchType=enums.SearchTypes.HYBRID,
+                    limit=limit
+                )
             )
 
             return response.contents.results if response.contents is not None else None
