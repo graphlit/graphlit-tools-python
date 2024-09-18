@@ -4,7 +4,7 @@ from typing import Type, List, Optional
 from graphlit import Graphlit
 from graphlit_api import exceptions, ContentFilter, QueryContentsContentsResults
 from langchain_core.tools import BaseTool, ToolException
-from pydantic import PrivateAttr, ConfigDict
+from pydantic import Field, ConfigDict
 
 logger = logging.getLogger(__name__)
 
@@ -15,18 +15,15 @@ class RetrievalTool(BaseTool):
     Filters can include query, date ranges, content types, and other criteria."""
     args_schema: Type[ContentFilter] = ContentFilter
 
-    _graphlit = PrivateAttr()
-
-    # Configure the model to allow extra fields
-    model_config = ConfigDict(extra='allow')
+    graphlit: Graphlit = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
         super().__init__(**kwargs)
-        self._graphlit = graphlit or Graphlit()
+        self.graphlit = graphlit or Graphlit()
 
     async def _arun(self, content_filter: ContentFilter) -> Optional[List[QueryContentsContentsResults]]:
         try:
-            response = await self._graphlit.client.query_contents(
+            response = await self.graphlit.client.query_contents(
                 filter=content_filter
             )
 
