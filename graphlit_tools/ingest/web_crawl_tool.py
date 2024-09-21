@@ -32,8 +32,8 @@ class WebCrawlTool(BaseTool):
     async def _arun(self, url: str, read_limit: Optional[int] = None) -> Optional[str]:
         try:
             response = await self.graphlit.client.create_feed(
-                name=f'Web Feed [{url}]',
                 feed=input_types.FeedInput(
+                    name=f'Web Feed [{url}]',
                     type=enums.FeedTypes.WEB,
                     web=input_types.WebFeedPropertiesInput(
                         uri=url,
