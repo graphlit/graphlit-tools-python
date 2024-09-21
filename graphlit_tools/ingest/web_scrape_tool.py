@@ -48,6 +48,8 @@ class WebScrapeTool(BaseTool):
                 if content is not None:
                     if content.type == enums.ContentTypes.FILE:
                         results.append(f'## {content.file_type}: {content.file_name}')
+                    elif content.type == enums.ContentTypes.PAGE:
+                        results.append(f'## {content.type}:')
                     else:
                         results.append(f'## {content.type}: {content.name}')
 
