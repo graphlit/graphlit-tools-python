@@ -88,6 +88,10 @@ class RetrievalTool(BaseTool):
 
                         results.append('\n')
 
+                if content.links is not None:
+                    for link in content.links[:10]: # NOTE: just return top 10 links
+                        results.append(f'{link.link_type} Link: {link.uri}')
+
                 results.append('\n')
 
             text = "\n".join(results)
