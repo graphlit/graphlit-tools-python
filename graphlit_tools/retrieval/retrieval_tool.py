@@ -46,27 +46,27 @@ class RetrievalTool(BaseTool):
                     results.append(f'## {content.type}: {content.name}')
 
                 if content.uri is not None:
-                    results.append(f'### URI {content.uri}')
+                    results.append(f'### URI: {content.uri}')
 
                 if content.document is not None:
                     if content.document.title is not None:
-                        results.append(f'### Title {content.document.title}')
+                        results.append(f'### Title: {content.document.title}')
 
                     if content.document.author is not None:
-                        results.append(f'### Author {content.document.author}')
+                        results.append(f'### Author: {content.document.author}')
 
                 if content.audio is not None:
                     if content.audio.title is not None:
-                        results.append(f'### Title {content.audio.title}')
+                        results.append(f'### Title: {content.audio.title}')
 
                     if content.audio.author is not None:
-                        results.append(f'### Host {content.audio.author}')
+                        results.append(f'### Host: {content.audio.author}')
 
                     if content.audio.episode is not None:
-                        results.append(f'### Episode {content.audio.episode}')
+                        results.append(f'### Episode: {content.audio.episode}')
 
                     if content.audio.series is not None:
-                        results.append(f'### Series {content.audio.series}')
+                        results.append(f'### Series: {content.audio.series}')
 
                 if content.pages is not None:
                     for page in content.pages:
