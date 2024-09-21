@@ -72,16 +72,16 @@ class WebCrawlTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, uri: str, read_limit: Optional[int] = None) -> Optional[str]:
+    def _run(self, url: str, read_limit: Optional[int] = None) -> Optional[str]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                future = asyncio.ensure_future(self._arun(uri, read_limit))
+                future = asyncio.ensure_future(self._arun(url, read_limit))
                 return loop.run_until_complete(future)
             else:
-                return loop.run_until_complete(self._arun(uri, read_limit))
+                return loop.run_until_complete(self._arun(url, read_limit))
         except RuntimeError:
-            return asyncio.run(self._arun(uri))
+            return asyncio.run(self._arun(url))
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:
