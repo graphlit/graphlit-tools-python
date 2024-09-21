@@ -30,7 +30,7 @@ class RetrievalTool(BaseTool):
                 filter=input_types.ContentFilter(
                     search=search,
                     searchType=enums.SearchTypes.HYBRID,
-                    limit=limit
+                    limit=limit if limit is not None else 10 # NOTE: default to 10 relevant contents
                 )
             )
 
