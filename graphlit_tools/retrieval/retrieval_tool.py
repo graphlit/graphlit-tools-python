@@ -71,6 +71,10 @@ class RetrievalTool(BaseTool):
                     if content.audio.series is not None:
                         results.append(f'### Series: {content.audio.series}')
 
+                if content.links is not None:
+                    for link in content.links[:10]: # NOTE: just return top 10 links
+                        results.append(f'### {link.link_type} Link: {link.uri}')
+
                 if content.pages is not None:
                     for page in content.pages:
                         if page.chunks is not None and len(page.chunks) > 0:
@@ -88,9 +92,9 @@ class RetrievalTool(BaseTool):
 
                         results.append('\n')
 
-                if content.links is not None:
-                    for link in content.links[:10]: # NOTE: just return top 10 links
-                        results.append(f'{link.link_type} Link: {link.uri}')
+                if content.pages is None and content.segments is None:
+                    if content.markdown is not None:
+                        results.append(content.markdown)
 
                 results.append('\n')
 

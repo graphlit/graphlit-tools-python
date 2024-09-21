@@ -66,7 +66,38 @@ class WebCrawlTool(BaseTool):
 
                 contents = await self.query_contents(feed_id)
 
-                return '\n\n'.join(content.markdown for content in contents) if contents is not None else None
+                results = []
+
+                for content in contents:
+                    if content.type == enums.ContentTypes.FILE:
+                        results.append(f'## {content.file_type}: {content.file_name}')
+                    else:
+                        results.append(f'## {content.type}: {content.name}')
+
+                    if content.original_date is not None:
+                        results.append(f'### Date: {content.original_date}')
+
+                    if content.uri is not None:
+                        results.append(f'### URI: {content.uri}')
+
+                    if content.document is not None:
+                        if content.document.title is not None:
+                            results.append(f'### Title: {content.document.title}')
+
+                        if content.document.author is not None:
+                            results.append(f'### Author: {content.document.author}')
+
+                    if content.links is not None:
+                        for link in content.links[:10]: # NOTE: just return top 10 links
+                            results.append(f'### {link.link_type} Link: {link.uri}')
+
+                    results.append('\n')
+                    results.append(content.markdown)
+                    results.append('\n')
+
+                text = "\n".join(results)
+
+                return text
             else:
                 return None
         except exceptions.GraphQLClientError as e:
