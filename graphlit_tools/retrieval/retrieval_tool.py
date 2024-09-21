@@ -45,6 +45,9 @@ class RetrievalTool(BaseTool):
                 else:
                     results.append(f'## {content.type}: {content.name}')
 
+                if content.original_date is not None:
+                    results.append(f'### Date: {content.original_date}')
+
                 if content.uri is not None:
                     results.append(f'### URI: {content.uri}')
 
