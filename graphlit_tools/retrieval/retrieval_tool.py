@@ -14,13 +14,21 @@ class RetrievalInput(BaseModel):
 
 class RetrievalTool(BaseTool):
     name = "Retrieval"
-    description = """Retrieves contents based on similarity search from knowledge base. Returns Markdown extracted from contents.
+    description = """Retrieves contents based on similarity search from knowledge base. Returns extracted Markdown text and metadata from relevant contents.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
+        """
+        Initializes the RetrievalTool.
+
+        Args:
+            graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
+                If not provided, a new Graphlit instance will be created.
+            **kwargs: Additional keyword arguments for the BaseTool superclass.
+        """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
 

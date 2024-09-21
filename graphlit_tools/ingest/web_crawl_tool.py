@@ -24,6 +24,16 @@ class WebCrawlTool(BaseTool):
     correlation_id: Optional[str] = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
+        """
+        Initializes the WebCrawlTool.
+
+        Args:
+            graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
+                If not provided, a new Graphlit instance will be created.
+            workflow_id (Optional[str]): ID for the workflow to use when ingesting web pages. Defaults to None.
+            correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
+            **kwargs: Additional keyword arguments for the BaseTool superclass.
+        """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
         self.workflow_id = workflow_id

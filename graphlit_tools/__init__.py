@@ -1,4 +1,5 @@
 from .retrieval.retrieval_tool import RetrievalTool
+from .retrieval.prompt_tool import PromptTool
 from .ingest.ingest_tool import IngestTool
 from .ingest.web_scrape_tool import WebScrapeTool
 from .ingest.web_crawl_tool import WebCrawlTool

@@ -13,7 +13,7 @@ class IngestInput(BaseModel):
 
 class IngestTool(BaseTool):
     name = "Ingest File"
-    description = """Ingests content from URL. Returns Markdown extracted from content.
+    description = """Ingests content from URL. Returns extracted Markdown text or audio transcript from content.
     Can ingest individual Word documents, PDFs, audio recordings, videos, images, or other unstructured data."""
     args_schema: Type[BaseModel] = IngestInput
 
@@ -23,6 +23,16 @@ class IngestTool(BaseTool):
     correlation_id: Optional[str] = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
+        """
+        Initializes the IngestTool.
+
+        Args:
+            graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
+                If not provided, a new Graphlit instance will be created.
+            workflow_id (Optional[str]): ID for the workflow to use when ingesting files. Defaults to None.
+            correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
+            **kwargs: Additional keyword arguments for the BaseTool superclass.
+        """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
         self.workflow_id = workflow_id
