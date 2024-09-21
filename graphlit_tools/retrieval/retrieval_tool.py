@@ -40,19 +40,43 @@ class RetrievalTool(BaseTool):
             results = []
 
             for content in response.contents.results:
-                results.append(f'## Content: {content.name}')
+                if content.type == enums.ContentTypes.FILE:
+                    results.append(f'## {content.file_type}: {content.file_name}')
+                else:
+                    results.append(f'## {content.type}: {content.name}')
+
+                if content.uri is not None:
+                    results.append(f'### URI {content.uri}')
+
+                if content.document is not None:
+                    if content.document.title is not None:
+                        results.append(f'### Title {content.document.title}')
+
+                    if content.document.author is not None:
+                        results.append(f'### Author {content.document.author}')
+
+                if content.audio is not None:
+                    if content.audio.title is not None:
+                        results.append(f'### Title {content.audio.title}')
+
+                    if content.audio.author is not None:
+                        results.append(f'### Host {content.audio.author}')
+
+                    if content.audio.episode is not None:
+                        results.append(f'### Episode {content.audio.episode}')
+
+                    if content.audio.series is not None:
+                        results.append(f'### Series {content.audio.series}')
 
                 if content.pages is not None:
                     for page in content.pages:
                         if page.chunks is not None and len(page.chunks) > 0:
-                            results.append(f'### Page #{page.index}')
+                            results.append(f'### Page #{page.index + 1}')
 
                             for chunk in page.chunks:
                                 results.append(chunk.text)
 
                             results.append('\n')
-
-                    results.append('\n')
 
                 if content.segments is not None:
                     for segment in content.segments:
@@ -64,12 +88,9 @@ class RetrievalTool(BaseTool):
 
                             results.append('\n')
 
-                    results.append('\n')
+                results.append('\n')
 
             text = "\n".join(results)
-
-            logger.debug(f'RetrievalTool: Given search text: {search}')
-            logger.debug(f'RetrievalTool: Retrieved text:\n{text}')
 
             return text
         except exceptions.GraphQLClientError as e:
