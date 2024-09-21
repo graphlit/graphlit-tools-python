@@ -37,7 +37,41 @@ class RetrievalTool(BaseTool):
             if response.contents is None or response.contents.results is None:
                 return None
 
-            return "\n\n".join([result.markdown for result in response.contents.results])
+            results = []
+
+            for content in response.contents.results:
+                results.append(f'## Content: {content.name}')
+
+                if content.pages is not None:
+                    for page in content.pages:
+                        if page.chunks is not None and len(page.chunks) > 0:
+                            results.append(f'### Page #{page.index}')
+
+                            for chunk in page.chunks:
+                                results.append(chunk.text)
+
+                            results.append('\n')
+
+                    results.append('\n')
+
+                if content.segments is not None:
+                    for segment in content.segments:
+                        if segment.chunks is not None and len(segment.chunks) > 0:
+                            results.append(f'### Transcript Segment [{segment.start_time}-{segment.end_time}]')
+
+                            for chunk in segment.chunks:
+                                results.append(chunk.text)
+
+                            results.append('\n')
+
+                    results.append('\n')
+
+            text = "\n".join(results)
+
+            logger.debug(f'RetrievalTool: Given search text: {search}')
+            logger.debug(f'RetrievalTool: Retrieved text:\n{text}')
+
+            return text
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
