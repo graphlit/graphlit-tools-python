@@ -82,7 +82,7 @@ class RetrievalTool(BaseTool):
                     for segment in content.segments:
                         results.append(f'### Transcript Segment [{segment.start_time}-{segment.end_time}]')
                         results.append(segment.text)
-                        
+
                         results.append('\n')
 
                 results.append('\n')
