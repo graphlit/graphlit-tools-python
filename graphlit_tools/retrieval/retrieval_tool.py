@@ -80,13 +80,10 @@ class RetrievalTool(BaseTool):
 
                 if content.segments is not None:
                     for segment in content.segments:
-                        if segment.chunks is not None and len(segment.chunks) > 0:
-                            results.append(f'### Transcript Segment [{segment.start_time}-{segment.end_time}]')
-
-                            for chunk in segment.chunks:
-                                results.append(chunk.text)
-
-                            results.append('\n')
+                        results.append(f'### Transcript Segment [{segment.start_time}-{segment.end_time}]')
+                        results.append(segment.text)
+                        
+                        results.append('\n')
 
                 results.append('\n')
 
