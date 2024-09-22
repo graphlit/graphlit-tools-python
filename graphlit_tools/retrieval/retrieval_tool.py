@@ -9,8 +9,7 @@ from pydantic import Field, BaseModel
 logger = logging.getLogger(__name__)
 
 class RetrievalInput(BaseModel):
-    search: Optional[str] = Field(description="Text to search for within the knowledge base")
-    content_id: str = Field(description="ID of content in knowledge base, if you want to search within a single piece of content")
+    search: str = Field(description="Text to search for within the knowledge base")
     limit: Optional[int] = Field(description="Number of contents to return from search query")
 
 class RetrievalTool(BaseTool):
@@ -34,11 +33,10 @@ class RetrievalTool(BaseTool):
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
 
-    async def _arun(self, search: Optional[str] = None, content_id: Optional[str] = None, limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, search: str = None, limit: Optional[int] = None) -> Optional[str]:
         try:
             response = await self.graphlit.client.query_contents(
                 filter=input_types.ContentFilter(
-                    id = content_id,
                     search=search,
                     searchType=enums.SearchTypes.HYBRID,
                     limit=limit if limit is not None else 10 # NOTE: default to 10 relevant contents
@@ -120,13 +118,13 @@ class RetrievalTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, search: Optional[str] = None, content_id: Optional[str] = None, limit: Optional[int] = None) -> Optional[str]:
+    def _run(self, search: str = None, limit: Optional[int] = None) -> Optional[str]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                future = asyncio.ensure_future(self._arun(search, content_id, limit))
+                future = asyncio.ensure_future(self._arun(search, limit))
                 return loop.run_until_complete(future)
             else:
-                return loop.run_until_complete(self._arun(search, content_id, limit))
+                return loop.run_until_complete(self._arun(search, limit))
         except RuntimeError:
-            return asyncio.run(self._arun(search, content_id, limit))
+            return asyncio.run(self._arun(search, limit))
