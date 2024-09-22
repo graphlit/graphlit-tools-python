@@ -51,8 +51,12 @@ class PromptTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
+        logger.debug('PromptTool: Initialized.')
+
     async def _arun(self, prompt: str) -> PromptOutput:
         try:
+            logger.debug('PromptTool: User: {prompt}.')
+    
             response = await self.graphlit.client.prompt_conversation(
                 id=self.conversation_id,
                 # TODO: requires API/SDK update
@@ -66,6 +70,9 @@ class PromptTool(BaseTool):
 
             message = response.prompt_conversation.message
 
+            if message is not None:
+                logger.debug('PromptTool: Assistant: {message}')
+
             citations = None
 
             if message is not None and message.citations:
@@ -78,12 +85,12 @@ class PromptTool(BaseTool):
             raise ToolException(str(e)) from e
 
     def _run(self, prompt: str) -> PromptOutput:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(prompt))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(prompt))
-        except RuntimeError:
-            return asyncio.run(self._arun(prompt))
+        return asyncio.run(self._arun(prompt))
+        # try:
+        #     loop = asyncio.get_event_loop()
+        #     if loop.is_running():
+        #         future = asyncio.ensure_future(self._arun(prompt))
+        #         return loop.run_until_complete(future)
+        #     else:
+        #         return loop.run_until_complete(self._arun(prompt))
+        # except RuntimeError:
