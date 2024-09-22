@@ -4,9 +4,7 @@ from graphlit_api import enums
 def format_content(content, include_text: Optional[bool] = True) -> List[str]:
     results = []
 
-    results.append('## Content')
-
-    results.append(f'**ID:** {content.id}')
+    results.append(f'**Content ID:** {content.id}')
 
     if content.type == enums.ContentTypes.FILE:
         results.append(f'**File Type:** [{content.file_type}]')
@@ -61,21 +59,21 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
                     for chunk in page.chunks:
                         results.append(chunk.text)
 
-                    results.append('\n')
+                    results.append('\n---\n')
 
         if content.segments is not None:
             for segment in content.segments:
                 results.append(f'**Transcript Segment [{segment.start_time}-{segment.end_time}]**:')
                 results.append(segment.text)
 
-                results.append('\n')
+                results.append('\n---\n')
 
         if content.pages is None and content.segments is None:
             if content.markdown is not None:
                 results.append(content.markdown)
 
                 results.append('\n')
-
-    results.append('\n')
+    else:
+        results.append('\n')
 
     return results
