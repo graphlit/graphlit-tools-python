@@ -47,7 +47,7 @@ class IngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, url: str) -> IngestOutput:
+    async def _arun(self, url: str) -> str:
         try:
             response = await self.graphlit.client.ingest_uri(
                 uri=url,
@@ -70,12 +70,12 @@ class IngestTool(BaseTool):
 
             links = [IngestOutputLink(uri=link.uri, link_type=link.link_type) for link in content.links if link.uri is not None and link.link_type is not None]
 
-            return IngestOutput(id=content.id, markdown=content.markdown, links=links)
+            return IngestOutput(id=content.id, markdown=content.markdown, links=links).model_dump_json(indent=2)
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, url: str) -> IngestOutput:
+    def _run(self, url: str) -> str:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
