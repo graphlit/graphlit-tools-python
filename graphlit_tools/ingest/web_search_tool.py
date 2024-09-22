@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class WebSearchInput(BaseModel):
     search: str = Field(description="Search query for web pages to be ingested into knowledge base")
-    read_limit: Optional[int] = Field(description="Maximum number of web pages from web search to be ingested")
+    read_limit: Optional[int] = Field(default=None, description="Maximum number of web pages from web search to be ingested")
 
 class WebSearchTool(BaseTool):
     name = "Graphlit web search tool"

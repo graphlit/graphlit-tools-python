@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class WebCrawlInput(BaseModel):
     url: str = Field(description="URL of web site to be crawled and ingested into knowledge base")
-    read_limit: Optional[int] = Field(description="Maximum number of web pages from web site to be crawled")
+    read_limit: Optional[int] = Field(default=None, description="Maximum number of web pages from web site to be crawled")
 
 class WebCrawlTool(BaseTool):
     name = "Graphlit web crawl tool"
