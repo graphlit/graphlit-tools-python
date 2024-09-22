@@ -51,11 +51,11 @@ class PromptTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-        logger.debug('PromptTool: Initialized.')
+        print('PromptTool: Initialized.')
 
-    async def _arun(self, prompt: str) -> Optional[PromptOutput]:
+    async def _arun(self, prompt: str) -> str: # Optional[PromptOutput]:
         try:
-            logger.debug(f'PromptTool: User: {prompt}.')
+            print(f'PromptTool: User: {prompt}.')
     
             response = await self.graphlit.client.prompt_conversation(
                 id=self.conversation_id,
@@ -71,7 +71,7 @@ class PromptTool(BaseTool):
             message = response.prompt_conversation.message
 
             if message is not None and message.message is not None:
-                logger.debug(f'PromptTool: Assistant: {message.message}')
+                print(f'PromptTool: Assistant: {message.message}')
 
             citations = None
 
@@ -79,12 +79,13 @@ class PromptTool(BaseTool):
                 citations = [PromptOutputCitation(index=citation.index, text=citation.text, content_id=citation.content.id) for citation in message.citations
                              if citation.content is not None and citation.index is not None and citation.text is not None]
 
-            return PromptOutput(completion=message.message, citations=citations)
+            return message.message # PromptOutput(completion=message.message, citations=citations)
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
+            print(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, prompt: str) -> Optional[PromptOutput]:
+    def _run(self, prompt: str) -> str: # Optional[PromptOutput]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
