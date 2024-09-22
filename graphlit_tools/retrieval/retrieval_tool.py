@@ -23,17 +23,20 @@ class RetrievalTool(BaseTool):
 
     graphlit: Graphlit = Field(None, exclude=True)
 
-    def __init__(self, graphlit: Optional[Graphlit] = None, **kwargs):
+    def __init__(self, graphlit: Optional[Graphlit] = None, search_type: Optional[enums.SearchTypes] = None, **kwargs):
         """
         Initializes the RetrievalTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
                 If not provided, a new Graphlit instance will be created.
+            search_type (Optional[SearchTypes]): An optional enum specifying the type of search to use: VECTOR, HYBRID or KEYWORD.
+                If not provided, vector search will be used.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
+        self.search_type = search_type
 
     async def _arun(self, search: str = None, content_id: Optional[str] = None, limit: Optional[int] = None) -> Optional[str]:
         try:
@@ -44,7 +47,7 @@ class RetrievalTool(BaseTool):
                 filter=input_types.ContentFilter(
                     id=content_id,
                     search=search,
-                    searchType=enums.SearchTypes.HYBRID,
+                    searchType=self.search_type if self.search_type is not None else enums.SearchTypes.VECTOR,
                     limit=limit if limit is not None else 10 # NOTE: default to 10 relevant contents
                 )
             )
