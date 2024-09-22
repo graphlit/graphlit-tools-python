@@ -11,10 +11,14 @@ logger = logging.getLogger(__name__)
 class IngestInput(BaseModel):
     url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
 
+class IngestOutputLink(BaseModel):
+    uri: str = Field(description="URI of extracted hyperlink")
+    link_type: enums.LinkTypes = Field(description="Type of extracted hyperlink")
+
 class IngestOutput(BaseModel):
     id: str = Field(description="ID of ingested content in knowledge base")
     markdown: Optional[str] = Field(description="Markdown text or audio transcript extracted from ingested file")
-    links: List[(str, enums.LinkTypes)] = Field(description="List of hyperlinks extracted from ingested file")
+    links: List[IngestOutputLink] = Field(description="List of hyperlinks extracted from ingested file")
 
 class IngestTool(BaseTool):
     name = "Ingest File from URL"
@@ -64,7 +68,7 @@ class IngestTool(BaseTool):
             if content is None:
                 raise ToolException('Failed to get content [{content_id}].')
 
-            links = [(link.uri, link.link_type) for link in content.links if link.uri is not None and link.link_type is not None]
+            links = [IngestOutputLink(uri=link.uri, link_type=link.link_type) for link in content.links if link.uri is not None and link.link_type is not None]
 
             return IngestOutput(id=content.id, markdown=content.markdown, links=links)
         except exceptions.GraphQLClientError as e:
