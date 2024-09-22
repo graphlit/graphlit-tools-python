@@ -52,7 +52,7 @@ class RetrievalTool(BaseTool):
             results = []
 
             for content in response.contents.results:
-                results.extend(helpers.format_content(content, include_text=True))
+                results.extend(helpers.format_content(content))
 
             text = "\n".join(results)
 

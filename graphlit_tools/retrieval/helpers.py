@@ -1,7 +1,7 @@
 from typing import List, Optional
 from graphlit_api import enums
 
-def format_content(content, include_text: Optional[bool] = None) -> List[str]:
+def format_content(content, include_text: Optional[bool] = True) -> List[str]:
     results = []
 
     results.append('## Content')

@@ -43,7 +43,7 @@ class LookupTool(BaseTool):
 
             print(f'LookupTool: Retrieved content by ID [{content_id}].')
 
-            results = helpers.format_content(response.content, include_text=True)
+            results = helpers.format_content(response.content)
 
             text = "\n".join(results)
 
