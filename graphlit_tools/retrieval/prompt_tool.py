@@ -53,7 +53,7 @@ class PromptTool(BaseTool):
 
         logger.debug('PromptTool: Initialized.')
 
-    async def _arun(self, prompt: str) -> PromptOutput:
+    async def _arun(self, prompt: str) -> Optional[PromptOutput]:
         try:
             logger.debug('PromptTool: User: {prompt}.')
     
@@ -84,13 +84,13 @@ class PromptTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, prompt: str) -> PromptOutput:
-        return asyncio.run(self._arun(prompt))
-        # try:
-        #     loop = asyncio.get_event_loop()
-        #     if loop.is_running():
-        #         future = asyncio.ensure_future(self._arun(prompt))
-        #         return loop.run_until_complete(future)
-        #     else:
-        #         return loop.run_until_complete(self._arun(prompt))
-        # except RuntimeError:
+    def _run(self, prompt: str) -> Optional[PromptOutput]:
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                future = asyncio.ensure_future(self._arun(prompt))
+                return loop.run_until_complete(future)
+            else:
+                return loop.run_until_complete(self._arun(prompt))
+        except RuntimeError:
+            return asyncio.run(self._arun(prompt))
