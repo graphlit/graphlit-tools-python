@@ -15,8 +15,8 @@ class RetrievalInput(BaseModel):
 
 class RetrievalTool(BaseTool):
     name = "Graphlit content retrieval tool"
-    description = """Retrieves contents based on similarity search from knowledge base. Uses search text to locate relevant contents.
-    Returns ID and metadata from relevant contents.
+    description = """Retrieves contents based on similarity search from knowledge base.
+    Returns extracted Markdown text and metadata from contents relevant to the search text.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
 
@@ -52,7 +52,7 @@ class RetrievalTool(BaseTool):
             results = []
 
             for content in response.contents.results:
-                results.extend(helpers.format_content(content))
+                results.extend(helpers.format_content(content, include_text=True))
 
             text = "\n".join(results)
 
