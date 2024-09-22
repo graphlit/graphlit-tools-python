@@ -22,6 +22,7 @@ class RetrievalTool(BaseTool):
     args_schema: Type[BaseModel] = RetrievalInput
 
     graphlit: Graphlit = Field(None, exclude=True)
+    search_type: Optional[enums.SearchTypes] = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, search_type: Optional[enums.SearchTypes] = None, **kwargs):
         """
