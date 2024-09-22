@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class RetrievalInput(BaseModel):
     search: str = Field(description="Text to search for within the knowledge base")
     content_id: Optional[str] = Field(description="Filter by ID of content which has been ingested into knowledge base. Use to search within a specific piece of content.")
-    limit: Optional[int] = Field(description="Number of contents to return from search query")
+    limit: Optional[int] = Field(description="Number of contents to return from search query, optional")
 
 class RetrievalTool(BaseTool):
     name = "Graphlit content retrieval tool"
@@ -37,6 +37,9 @@ class RetrievalTool(BaseTool):
 
     async def _arun(self, search: str = None, content_id: Optional[str] = None, limit: Optional[int] = None) -> Optional[str]:
         try:
+            # NOTE: force to one content result, if filtering by content_id
+            limit = 1 if content_id is not None else limit
+
             response = await self.graphlit.client.query_contents(
                 filter=input_types.ContentFilter(
                     id=content_id,
