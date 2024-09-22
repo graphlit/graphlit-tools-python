@@ -9,7 +9,7 @@ from pydantic import Field, BaseModel
 logger = logging.getLogger(__name__)
 
 class PromptInput(BaseModel):
-    prompt: str = Field(description="User prompt for RAG pipeline")
+    prompt: str = Field(description="Text prompt which is provided to LLM for completion, via RAG pipeline.")
 
 class PromptTool(BaseTool):
     name = "Graphlit prompt tool"
