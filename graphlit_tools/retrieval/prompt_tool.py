@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Type, Optional
+from typing import Type, Optional, List
 from graphlit import Graphlit
 from graphlit_api import exceptions, input_types
 from langchain_core.tools import BaseTool, ToolException
@@ -10,6 +10,15 @@ logger = logging.getLogger(__name__)
 
 class PromptInput(BaseModel):
     prompt: str = Field(description="User prompt for RAG pipeline")
+
+class PromptOutputCitation(BaseModel):
+    index: int = Field(description="Citation index, one-based")
+    text: str = Field(description="Relevant text from cited content")
+    content_id: str = Field(description="ID of cited content in knowledge base")
+
+class PromptOutput(BaseModel):
+    completion: str = Field(description="LLM assistant message return from LLM prompt completion")
+    citations: List[PromptOutputCitation] = Field(description="List of citations referenced in LLM assistant message")
 
 class PromptTool(BaseTool):
     name = "Graphlit prompt tool"
@@ -42,7 +51,7 @@ class PromptTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, prompt: str) -> Optional[str]:
+    async def _arun(self, prompt: str) -> PromptOutput:
         try:
             response = await self.graphlit.client.prompt_conversation(
                 id=self.conversation_id,
@@ -57,12 +66,18 @@ class PromptTool(BaseTool):
 
             message = response.prompt_conversation.message
 
-            return message.message
+            citations = None
+
+            if message is not None and message.citations:
+                citations = [PromptOutputCitation(index=citation.index, text=citation.text, content_id=citation.content.id) for citation in message.citations
+                             if citation.content is not None and citation.index is not None and citation.text is not None]
+
+            return PromptOutput(completion=message.message, citations=citations)
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, prompt: str) -> Optional[str]:
+    def _run(self, prompt: str) -> PromptOutput:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():

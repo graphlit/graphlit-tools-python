@@ -1,8 +1,8 @@
 import asyncio
 import logging
-from typing import Type, Optional
+from typing import Type, Optional, List
 from graphlit import Graphlit
-from graphlit_api import exceptions, input_types
+from graphlit_api import exceptions, enums, input_types
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 
@@ -11,8 +11,13 @@ logger = logging.getLogger(__name__)
 class IngestInput(BaseModel):
     url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
 
+class IngestOutput(BaseModel):
+    id: str = Field(description="ID of ingested content in knowledge base")
+    markdown: Optional[str] = Field(description="Markdown text or audio transcript extracted from ingested file")
+    links: List[(str, enums.LinkTypes)] = Field(description="List of hyperlinks extracted from ingested file")
+
 class IngestTool(BaseTool):
-    name = "Ingest File"
+    name = "Ingest File from URL"
     description = """Ingests content from URL. Returns extracted Markdown text or audio transcript from content.
     Can ingest individual Word documents, PDFs, audio recordings, videos, images, or other unstructured data."""
     args_schema: Type[BaseModel] = IngestInput
@@ -38,7 +43,7 @@ class IngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, url: str) -> Optional[str]:
+    async def _arun(self, url: str) -> IngestOutput:
         try:
             response = await self.graphlit.client.ingest_uri(
                 uri=url,
@@ -49,17 +54,24 @@ class IngestTool(BaseTool):
 
             content_id = response.ingest_uri.id if response.ingest_uri is not None else None
 
-            if content_id is not None:
-                response = await self.graphlit.client.get_content(content_id)
+            if content_id is None:
+                raise ToolException('Invalid content identifier after ingestion.')
 
-                return response.content.markdown if response.content is not None else None
-            else:
-                return None
+            response = await self.graphlit.client.get_content(content_id)
+
+            content = response.content
+
+            if content is None:
+                raise ToolException('Failed to get content [{content_id}].')
+
+            links = [(link.uri, link.link_type) for link in content.links if link.uri is not None and link.link_type is not None]
+
+            return IngestOutput(id=content.id, markdown=content.markdown, links=links)
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, url: str) -> Optional[str]:
+    def _run(self, url: str) -> IngestOutput:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
