@@ -11,15 +11,6 @@ logger = logging.getLogger(__name__)
 class PromptInput(BaseModel):
     prompt: str = Field(description="User prompt for RAG pipeline")
 
-class PromptOutputCitation(BaseModel):
-    index: int = Field(description="Citation index, one-based")
-    text: str = Field(description="Relevant text from cited content")
-    content_id: str = Field(description="ID of cited content in knowledge base")
-
-class PromptOutput(BaseModel):
-    completion: str = Field(description="LLM assistant message return from LLM prompt completion")
-    citations: List[PromptOutputCitation] = Field(description="List of citations referenced in LLM assistant message")
-
 class PromptTool(BaseTool):
     name = "Graphlit prompt tool"
     description = """Uses vector embeddings and similarity search to retrieve relevant content from knowledge base.
@@ -52,7 +43,7 @@ class PromptTool(BaseTool):
         self.correlation_id = correlation_id
 
     async def _arun(self, prompt: str) -> str:
-        try:    
+        try:
             response = await self.graphlit.client.prompt_conversation(
                 id=self.conversation_id,
                 # TODO: requires API/SDK update
@@ -66,13 +57,7 @@ class PromptTool(BaseTool):
 
             message = response.prompt_conversation.message
 
-            citations = None
-
-            if message is not None and message.citations is not None:
-                citations = [PromptOutputCitation(index=citation.index, text=citation.text, content_id=citation.content.id) for citation in message.citations
-                             if citation.content is not None and citation.index is not None and citation.text is not None]
-
-            return PromptOutput(completion=message.message, citations=citations).model_dump_json(indent=2)        
+            return message.message
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             print(str(e))
