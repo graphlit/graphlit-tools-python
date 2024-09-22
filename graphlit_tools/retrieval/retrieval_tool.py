@@ -5,6 +5,7 @@ from graphlit import Graphlit
 from graphlit_api import exceptions, enums, input_types
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
+from . import helpers
 
 logger = logging.getLogger(__name__)
 
@@ -13,9 +14,9 @@ class RetrievalInput(BaseModel):
     limit: Optional[int] = Field(description="Number of contents to return from search query")
 
 class RetrievalTool(BaseTool):
-    name = "Graphlit retrieval tool"
+    name = "Graphlit content retrieval tool"
     description = """Retrieves contents based on similarity search from knowledge base. Uses search text to locate relevant contents.
-    Returns extracted Markdown text and metadata from relevant contents.
+    Returns ID and metadata from relevant contents.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
 
@@ -46,70 +47,12 @@ class RetrievalTool(BaseTool):
             if response.contents is None or response.contents.results is None:
                 return None
 
-            print(f'RetrievalTool: Found [{len(response.contents.results)}] from search text [{search}].')
+            print(f'RetrievalTool: Retrieved [{len(response.contents.results)}] content(s) given search text [{search}].')
 
             results = []
 
             for content in response.contents.results:
-                if content.type == enums.ContentTypes.FILE:
-                    results.append(f'## {content.file_type}: {content.file_name}')
-                elif content.type == enums.ContentTypes.PAGE:
-                    results.append(f'## {content.type}:')
-                else:
-                    results.append(f'## {content.type}: {content.name}')
-
-                if content.original_date is not None:
-                    results.append(f'### Date: {content.original_date}')
-
-                if content.uri is not None:
-                    results.append(f'### URI: {content.uri}')
-
-                if content.document is not None:
-                    if content.document.title is not None:
-                        results.append(f'### Title: {content.document.title}')
-
-                    if content.document.author is not None:
-                        results.append(f'### Author: {content.document.author}')
-
-                if content.audio is not None:
-                    if content.audio.title is not None:
-                        results.append(f'### Title: {content.audio.title}')
-
-                    if content.audio.author is not None:
-                        results.append(f'### Host: {content.audio.author}')
-
-                    if content.audio.episode is not None:
-                        results.append(f'### Episode: {content.audio.episode}')
-
-                    if content.audio.series is not None:
-                        results.append(f'### Series: {content.audio.series}')
-
-                if content.links is not None:
-                    for link in content.links[:10]: # NOTE: just return top 10 links
-                        results.append(f'### {link.link_type} Link: {link.uri}')
-
-                if content.pages is not None:
-                    for page in content.pages:
-                        if page.chunks is not None and len(page.chunks) > 0:
-                            results.append(f'### Page #{page.index + 1}')
-
-                            for chunk in page.chunks:
-                                results.append(chunk.text)
-
-                            results.append('\n')
-
-                if content.segments is not None:
-                    for segment in content.segments:
-                        results.append(f'### Transcript Segment [{segment.start_time}-{segment.end_time}]')
-                        results.append(segment.text)
-
-                        results.append('\n')
-
-                if content.pages is None and content.segments is None:
-                    if content.markdown is not None:
-                        results.append(content.markdown)
-
-                results.append('\n')
+                results.extend(helpers.format_content(content))
 
             text = "\n".join(results)
 
