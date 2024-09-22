@@ -51,9 +51,7 @@ class PromptTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-        print('PromptTool: Initialized.')
-
-    async def _arun(self, prompt: str) -> str: # Optional[PromptOutput]:
+    async def _arun(self, prompt: str) -> PromptOutput:
         try:
             print(f'PromptTool: User: {prompt}.')
     
@@ -79,13 +77,13 @@ class PromptTool(BaseTool):
                 citations = [PromptOutputCitation(index=citation.index, text=citation.text, content_id=citation.content.id) for citation in message.citations
                              if citation.content is not None and citation.index is not None and citation.text is not None]
 
-            return message.message # PromptOutput(completion=message.message, citations=citations)
+            return PromptOutput(completion=message.message, citations=citations)
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             print(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, prompt: str) -> str: # Optional[PromptOutput]:
+    def _run(self, prompt: str) -> PromptOutput:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
