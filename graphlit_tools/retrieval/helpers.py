@@ -70,7 +70,10 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
 
         if content.pages is None and content.segments is None:
             if content.markdown is not None:
+                results.append('### Text')
                 results.append(content.markdown)
+
+                results.append('\n')
 
     results.append('\n')
 
