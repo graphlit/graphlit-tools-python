@@ -9,13 +9,14 @@ from pydantic import Field, BaseModel
 logger = logging.getLogger(__name__)
 
 class RetrievalInput(BaseModel):
-    search: Optional[str] = Field(description="Text to search for within ingested contents in knowledge base")
-    content_id: str = Field(description="ID of content in knowledge base to search on specifically")
+    search: Optional[str] = Field(description="Text to search for within the knowledge base")
+    content_id: str = Field(description="ID of content in knowledge base, if you want to search within a single piece of content")
     limit: Optional[int] = Field(description="Number of contents to return from search query")
 
 class RetrievalTool(BaseTool):
     name = "Graphlit retrieval tool"
-    description = """Retrieves contents based on similarity search from knowledge base. Returns extracted Markdown text and metadata from relevant contents.
+    description = """Retrieves contents based on similarity search from knowledge base. Uses search text to locate relevant contents.
+    Returns extracted Markdown text and metadata from relevant contents.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
 
