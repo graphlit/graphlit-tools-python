@@ -12,7 +12,7 @@ class WebScrapeInput(BaseModel):
     url: str = Field(description="URL of web page to be scraped and ingested into knowledge base")
 
 class WebScrapeTool(BaseTool):
-    name = "Web Scrape"
+    name = "Graphlit web scrape tool"
     description = """Scrapes web page. Returns Markdown extracted from web page."""
     args_schema: Type[BaseModel] = WebScrapeInput
 

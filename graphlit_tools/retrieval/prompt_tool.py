@@ -12,7 +12,7 @@ class PromptInput(BaseModel):
     prompt: str = Field(description="User prompt for RAG pipeline")
 
 class PromptTool(BaseTool):
-    name = "Prompt"
+    name = "Graphlit prompt tool"
     description = """Uses vector embeddings and similarity search to retrieve relevant content from knowledge base.
     Prompts LLM with relevant content and returns completion from RAG pipeline. Returns Markdown text from LLM completion.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""

@@ -14,7 +14,7 @@ class WebCrawlInput(BaseModel):
     read_limit: Optional[int] = Field(description="Maximum number of web pages from web site to be crawled")
 
 class WebCrawlTool(BaseTool):
-    name = "Web Crawl"
+    name = "Graphlit web crawl tool"
     description = """Crawls web pages from web site. Returns Markdown extracted from web pages."""
     args_schema: Type[BaseModel] = WebCrawlInput
 

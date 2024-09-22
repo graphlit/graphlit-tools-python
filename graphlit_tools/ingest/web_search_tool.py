@@ -14,7 +14,7 @@ class WebSearchInput(BaseModel):
     read_limit: Optional[int] = Field(description="Maximum number of web pages from web search to be ingested")
 
 class WebSearchTool(BaseTool):
-    name = "Web Search"
+    name = "Graphlit web search tool"
     description = """Performs web search based on search query, and ingests the related web pages into knowledge base. Returns Markdown extracted from web pages."""
     args_schema: Type[BaseModel] = WebSearchInput
 

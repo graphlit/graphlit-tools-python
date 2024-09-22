@@ -13,7 +13,7 @@ class RetrievalInput(BaseModel):
     limit: Optional[int] = Field(description="Number of contents to return from search query")
 
 class RetrievalTool(BaseTool):
-    name = "Retrieval"
+    name = "Graphlit retrieval tool"
     description = """Retrieves contents based on similarity search from knowledge base. Returns extracted Markdown text and metadata from relevant contents.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
