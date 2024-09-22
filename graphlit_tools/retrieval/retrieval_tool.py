@@ -9,7 +9,7 @@ from pydantic import Field, BaseModel
 logger = logging.getLogger(__name__)
 
 class RetrievalInput(BaseModel):
-    search: Optional[str] = Field(description="Text to search for in contents")
+    search: Optional[str] = Field(description="Text to search for within ingested contents in knowledge base")
     content_id: str = Field(description="ID of content in knowledge base to search on specifically")
     limit: Optional[int] = Field(description="Number of contents to return from search query")
 
@@ -46,6 +46,8 @@ class RetrievalTool(BaseTool):
 
             if response.contents is None or response.contents.results is None:
                 return None
+
+            print(f'RetrievalTool: Found [{len(response.contents.results)}] from search text [{search}].')
 
             results = []
 
