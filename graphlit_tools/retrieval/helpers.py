@@ -4,16 +4,18 @@ from graphlit_api import enums
 def format_content(content, include_text: Optional[bool] = None) -> List[str]:
     results = []
 
-    if content.type == enums.ContentTypes.FILE:
-        results.append(f'## Content [{content.file_type}]')
-        results.append(f'**Filename:** {content.file_name}')
-    elif content.type == enums.ContentTypes.PAGE:
-        results.append(f'## Content [{content.type}]')
-    else:
-        results.append(f'## Content [{content.type}]')
-        results.append(f'**Name:** {content.name}')
+    results.append('## Content')
 
     results.append(f'**ID:** {content.id}')
+
+    if content.type == enums.ContentTypes.FILE:
+        results.append(f'**File Type:** [{content.file_type}]')
+        results.append(f'**File Name:** {content.file_name}')
+    else:
+        results.append(f'**Type:** [{content.type}]')
+
+        if content.type is not enums.ContentTypes.PAGE:
+            results.append(f'**Name:** {content.name}')
 
     if content.uri is not None:
         results.append(f'**URI:** {content.uri}')

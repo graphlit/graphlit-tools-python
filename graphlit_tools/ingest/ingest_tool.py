@@ -13,7 +13,8 @@ class IngestInput(BaseModel):
 
 class IngestTool(BaseTool):
     name = "Ingest File from URL"
-    description = """Ingests content from URL. Returns extracted Markdown text or audio transcript from content.
+    description = """Ingests content from URL. Returns the ID of the ingested content in knowledge base.
+    Can use LookupTool to return Metadata and extracted Markdown text from content. Or, can use RetrievalTool to search within content by ID and return Metadata and relevant extracted Markdown text chunks.
     Can ingest individual Word documents, PDFs, audio recordings, videos, images, or other unstructured data."""
     args_schema: Type[BaseModel] = IngestInput
 
@@ -47,14 +48,7 @@ class IngestTool(BaseTool):
                 correlation_id=self.correlation_id
             )
 
-            content_id = response.ingest_uri.id if response.ingest_uri is not None else None
-
-            if content_id is None:
-                raise ToolException('Invalid content identifier after ingestion.')
-
-            response = await self.graphlit.client.get_content(content_id)
-
-            return response.content.markdown if response.content is not None else None
+            return response.ingest_uri.id if response.ingest_uri is not None else None
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
