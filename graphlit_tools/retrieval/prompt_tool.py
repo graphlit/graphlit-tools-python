@@ -55,7 +55,7 @@ class PromptTool(BaseTool):
 
     async def _arun(self, prompt: str) -> Optional[PromptOutput]:
         try:
-            logger.debug('PromptTool: User: {prompt}.')
+            logger.debug(f'PromptTool: User: {prompt}.')
     
             response = await self.graphlit.client.prompt_conversation(
                 id=self.conversation_id,
@@ -70,12 +70,12 @@ class PromptTool(BaseTool):
 
             message = response.prompt_conversation.message
 
-            if message is not None:
-                logger.debug('PromptTool: Assistant: {message}')
+            if message is not None and message.message is not None:
+                logger.debug(f'PromptTool: Assistant: {message.message}')
 
             citations = None
 
-            if message is not None and message.citations:
+            if message is not None and message.citations is not None:
                 citations = [PromptOutputCitation(index=citation.index, text=citation.text, content_id=citation.content.id) for citation in message.citations
                              if citation.content is not None and citation.index is not None and citation.text is not None]
 
