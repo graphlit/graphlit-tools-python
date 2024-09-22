@@ -1,8 +1,8 @@
 import asyncio
 import logging
-from typing import Type, Optional, List
+from typing import Type, Optional
 from graphlit import Graphlit
-from graphlit_api import exceptions, enums, input_types
+from graphlit_api import exceptions, input_types
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 
@@ -10,15 +10,6 @@ logger = logging.getLogger(__name__)
 
 class IngestInput(BaseModel):
     url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
-
-class IngestOutputLink(BaseModel):
-    uri: str = Field(description="URI of extracted hyperlink")
-    link_type: enums.LinkTypes = Field(description="Type of extracted hyperlink")
-
-class IngestOutput(BaseModel):
-    id: str = Field(description="ID of ingested content in knowledge base")
-    markdown: Optional[str] = Field(description="Markdown text or audio transcript extracted from ingested file")
-    links: List[IngestOutputLink] = Field(description="List of hyperlinks extracted from ingested file")
 
 class IngestTool(BaseTool):
     name = "Ingest File from URL"
@@ -47,7 +38,7 @@ class IngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, url: str) -> str:
+    async def _arun(self, url: str) -> Optional[str]:
         try:
             response = await self.graphlit.client.ingest_uri(
                 uri=url,
@@ -63,19 +54,12 @@ class IngestTool(BaseTool):
 
             response = await self.graphlit.client.get_content(content_id)
 
-            content = response.content
-
-            if content is None:
-                raise ToolException('Failed to get content [{content_id}].')
-
-            links = [IngestOutputLink(uri=link.uri, link_type=link.link_type) for link in content.links if link.uri is not None and link.link_type is not None]
-
-            return IngestOutput(id=content.id, markdown=content.markdown, links=links).model_dump_json(indent=2)
+            return response.content.markdown if response.content is not None else None
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, url: str) -> str:
+    def _run(self, url: str) -> Optional[str]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():

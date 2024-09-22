@@ -1,8 +1,8 @@
 import asyncio
 import logging
-from typing import Type, Optional, List
+from typing import Type, Optional
 from graphlit import Graphlit
-from graphlit_api import exceptions, input_types
+from graphlit_api import exceptions
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 

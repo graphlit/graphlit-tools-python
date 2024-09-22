@@ -3,9 +3,9 @@ import logging
 import os
 import base64
 import mimetypes
-from typing import Type, Optional, List
+from typing import Type, Optional
 from graphlit import Graphlit
-from graphlit_api import exceptions, enums
+from graphlit_api import exceptions
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 
@@ -13,15 +13,6 @@ logger = logging.getLogger(__name__)
 
 class LocalIngestInput(BaseModel):
     file_path: str = Field(description="Path of local file to be ingested into knowledge base")
-
-class LocalIngestOutputLink(BaseModel):
-    uri: str = Field(description="URI of extracted hyperlink")
-    link_type: enums.LinkTypes = Field(description="Type of extracted hyperlink")
-
-class LocalIngestOutput(BaseModel):
-    id: str = Field(description="ID of ingested content in knowledge base")
-    markdown: Optional[str] = Field(description="Markdown text or audio transcript extracted from ingested file")
-    links: List[LocalIngestOutputLink] = Field(description="List of hyperlinks extracted from ingested file")
 
 class LocalIngestTool(BaseTool):
     name = "Ingest Local File"
@@ -50,7 +41,7 @@ class LocalIngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, file_path: str) -> str:
+    async def _arun(self, file_path: str) -> Optional[str]:
         try:
             file_name = os.path.basename(file_path)
             content_name, _ = os.path.splitext(file_name)
@@ -75,19 +66,12 @@ class LocalIngestTool(BaseTool):
 
                 response = await self.graphlit.client.get_content(content_id)
 
-                content = response.content
-
-                if content is None:
-                    raise ToolException('Failed to get content [{content_id}].')
-
-                links = [LocalIngestOutputLink(uri=link.uri, link_type=link.link_type) for link in content.links if link.uri is not None and link.link_type is not None]
-
-                return LocalIngestOutput(id=content.id, markdown=content.markdown, links=links).model_dump_json(indent=2)
+                return response.content.markdown if response.content is not None else None
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, file_path: str) -> str:
+    def _run(self, file_path: str) -> Optional[str]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
