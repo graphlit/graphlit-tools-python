@@ -33,6 +33,7 @@ class WebSearchTool(BaseTool):
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
+                    name = 'Web Search',
                     type=enums.FeedTypes.SEARCH,
                     search=input_types.SearchFeedPropertiesInput(
                         type=enums.SearchServiceTypes.TAVILY,
