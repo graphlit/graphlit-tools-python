@@ -16,7 +16,8 @@ class RetrievalInput(BaseModel):
 
 class RetrievalTool(BaseTool):
     name = "Graphlit content retrieval tool"
-    description = """Retrieves contents based on similarity search from knowledge base.
+    description = """Accepts search text as string.
+    Retrieves contents based on similarity search from knowledge base.
     Returns extracted Markdown text and metadata from contents relevant to the search text.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""
     args_schema: Type[BaseModel] = RetrievalInput
