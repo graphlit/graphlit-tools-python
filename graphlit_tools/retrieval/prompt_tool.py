@@ -1,18 +1,35 @@
 import asyncio
 import logging
-from typing import Type, Optional
+import json
+from typing import Type, Optional, List, Callable
 from graphlit import Graphlit
-from graphlit_api import exceptions
+from graphlit_api import exceptions, input_types
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import Field, BaseModel
 
 logger = logging.getLogger(__name__)
 
+"""
+Example of tool callback function:
+def callback(tool_name, **kwargs):
+    if tool_name == 'add_numbers':
+        return add_numbers(**kwargs)
+    elif tool_name == 'concat_strings':
+        return concat_strings(**kwargs)
+    else:
+        return None
+"""
+
 class PromptInput(BaseModel):
     prompt: str = Field(description="Text prompt which is provided to LLM for completion, via RAG pipeline.")
 
+class PromptToolInput(BaseModel):
+    name: str = Field(description="Tool name.")
+    description: Optional[str] = Field(description="Tool description.")
+    schema: dict = Field(description="JSON schema for tool arguments.")
+
 class PromptTool(BaseTool):
-    name = "Graphlit prompt tool"
+    name = "Graphlit RAG prompt tool"
     description = """Accepts user prompt as string.
     Prompts LLM with relevant content and returns completion from RAG pipeline. Returns Markdown text from LLM completion.
     Uses vector embeddings and similarity search to retrieve relevant content from knowledge base.
@@ -25,7 +42,12 @@ class PromptTool(BaseTool):
     specification_id: Optional[str] = Field(None, exclude=True)
     correlation_id: Optional[str] = Field(None, exclude=True)
 
-    def __init__(self, graphlit: Optional[Graphlit] = None, conversation_id: Optional[str] = None, specification_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
+    tools: Optional[List[PromptToolInput]] = Field(None, exclude=True)
+    callback: Optional[Callable[[str, dict], str]] = Field(None, exclude=True)
+
+    def __init__(self, graphlit: Optional[Graphlit] = None, conversation_id: Optional[str] = None, specification_id: Optional[str] = None,
+                 tools: Optional[List[PromptToolInput]] = None, callback: Optional[Callable[[str, dict], str]] = None,
+                 correlation_id: Optional[str] = None, **kwargs):
         """
         Initializes the PromptTool.
 
@@ -35,21 +57,25 @@ class PromptTool(BaseTool):
             conversation_id (Optional[str]): ID for the ongoing conversation. Defaults to None.
             specification_id (Optional[str]): ID for the LLM specification. Will update an existing conversation. Defaults to None.
             correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
+            tools (Optional[List[ToolInput]]): List of tools provided to LLM. Defaults to None.
+            callback (Optional[Callable[[str, dict], str]]): Function which gets called with tool name and arguments, and returns result from LLM tool call. Defaults to None.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
         self.conversation_id = conversation_id
         self.specification_id = specification_id
+        self.tools = tools
+        self.callback = callback
         self.correlation_id = correlation_id
 
     async def _arun(self, prompt: str) -> str:
         try:
             response = await self.graphlit.client.prompt_conversation(
                 id=self.conversation_id,
-                # TODO: requires API/SDK update
-                #specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
+                specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
                 prompt=prompt,
+                tools=[input_types.ToolDefinitionInput(name=tool.name, description=tool.description, schema=tool.schema) for tool in self.tools] if self.tools is not None and self.callback is not None else None,
                 correlation_id=self.correlation_id
             )
 
@@ -58,8 +84,40 @@ class PromptTool(BaseTool):
 
             message = response.prompt_conversation.message
 
-            return message.message
+            if self.tools is not None and message.tool_calls is not None:
+                responses = []
+
+                for tool_call in message.tool_calls:
+                    arguments = json.loads(tool_call.arguments)
+
+                    if asyncio.iscoroutinefunction(self.callback):
+                        content = await self.callback(tool_call.name, **arguments)
+                    else:
+                        content = self.callback(tool_call.name, **arguments)
+
+                    if content is not None:
+                        responses.append(input_types.ConversationToolResponseInput(id=tool_call.id, content=content))
+
+                if len(responses) > 0:
+                    response = await self.graphlit.client.continue_conversation(
+                        id=self.conversation_id,
+                        responses=responses,
+                        correlation_id=self.correlation_id
+                    )
+
+                    if response.continue_conversation is None or response.continue_conversation.message is None:
+                        return None
+
+                    return response.continue_conversation.message.message if response.continue_conversation.message is not None else None
+                else:
+                    return message.message
+            else:
+                return message.message
         except exceptions.GraphQLClientError as e:
+            logger.error(str(e))
+            print(str(e))
+            raise ToolException(str(e)) from e
+        except Exception as e:
             logger.error(str(e))
             print(str(e))
             raise ToolException(str(e)) from e
