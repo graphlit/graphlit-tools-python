@@ -26,7 +26,7 @@ class PromptInput(BaseModel):
 class PromptToolInput(BaseModel):
     name: str = Field(description="Tool name.")
     description: Optional[str] = Field(description="Tool description.")
-    schema: dict = Field(description="JSON schema for tool arguments.")
+    args_schema: dict = Field(description="JSON schema for tool arguments.")
 
 class PromptTool(BaseTool):
     name = "Graphlit RAG prompt tool"
@@ -75,7 +75,7 @@ class PromptTool(BaseTool):
                 id=self.conversation_id,
                 specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
                 prompt=prompt,
-                tools=[input_types.ToolDefinitionInput(name=tool.name, description=tool.description, schema=tool.schema) for tool in self.tools] if self.tools is not None and self.callback is not None else None,
+                tools=[input_types.ToolDefinitionInput(name=tool.name, description=tool.description, schema=tool.args_schema) for tool in self.tools] if self.tools is not None and self.callback is not None else None,
                 correlation_id=self.correlation_id
             )
 
