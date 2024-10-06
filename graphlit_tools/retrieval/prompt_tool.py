@@ -75,7 +75,7 @@ class PromptTool(BaseTool):
                 id=self.conversation_id,
                 specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
                 prompt=prompt,
-                tools=[input_types.ToolDefinitionInput(name=tool.name, description=tool.description, schema=tool.args_schema) for tool in self.tools] if self.tools is not None and self.callback is not None else None,
+                tools=[input_types.ToolDefinitionInput(name=tool.name, description=tool.description, schema=json.dumps(tool.args_schema)) for tool in self.tools if tool.name is not None and tool.args_schema is not None] if self.tools is not None and self.callback is not None else None,
                 correlation_id=self.correlation_id
             )
 
