@@ -46,7 +46,7 @@ class PromptTool(BaseTool):
     callback: Optional[Callable[[str, dict], str]] = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, conversation_id: Optional[str] = None, specification_id: Optional[str] = None,
-                 tools: Optional[List[PromptToolInput]] = None, callback: Optional[Callable[[str, Any], str]] = None,
+                 tools: Optional[List[PromptToolInput]] = None, callback: Optional[Callable[[str, Any], Optional[str]]] = None,
                  correlation_id: Optional[str] = None, **kwargs):
         """
         Initializes the PromptTool.
