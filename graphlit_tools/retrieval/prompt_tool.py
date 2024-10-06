@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import json
-from typing import Type, Optional, List, Any, Callable
+from typing import Type, Optional, List, Callable
 from graphlit import Graphlit
 from graphlit_api import exceptions, input_types
 from langchain_core.tools import BaseTool, ToolException
@@ -46,7 +46,7 @@ class PromptTool(BaseTool):
     callback: Optional[Callable[[str, dict], str]] = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, conversation_id: Optional[str] = None, specification_id: Optional[str] = None,
-                 tools: Optional[List[PromptToolInput]] = None, callback: Optional[Callable[[str, Any], Optional[str]]] = None,
+                 tools: Optional[List[PromptToolInput]] = None, callback: Optional[Callable[..., Optional[str]]] = None,
                  correlation_id: Optional[str] = None, **kwargs):
         """
         Initializes the PromptTool.
