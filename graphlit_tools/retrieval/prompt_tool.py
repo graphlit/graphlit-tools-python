@@ -79,7 +79,8 @@ class PromptTool(BaseTool):
                 correlation_id=self.correlation_id
             )
 
-            if response.prompt_conversation is None or response.prompt_conversation.message is None:
+            if response.prompt_conversation is None or response.prompt_conversation.conversation is None or response.prompt_conversation.message is None:
+                print('Failed to prompt conversation.')
                 return None
 
             message = response.prompt_conversation.message
@@ -100,13 +101,13 @@ class PromptTool(BaseTool):
                         content = self.callback(tool_call.name, **arguments)
 
                     if content is not None:
-                        print(f'Received response from tool callback [{tool_call.name}]: {content}.')
+                        print(f'Received response from tool callback [{tool_call.name}]: {content}')
 
                         responses.append(input_types.ConversationToolResponseInput(id=tool_call.id, content=content))
 
                 if len(responses) > 0:
                     response = await self.graphlit.client.continue_conversation(
-                        id=self.conversation_id,
+                        id=response.prompt_conversation.conversation.id,
                         responses=responses,
                         correlation_id=self.correlation_id
                     )
