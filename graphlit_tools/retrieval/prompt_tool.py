@@ -88,11 +88,7 @@ class PromptTool(BaseTool):
             if self.tools is not None and message.tool_calls is not None:
                 responses = []
 
-                print(f'Received [{len(message.tool_calls)}] tool call(s).')
-
                 for tool_call in message.tool_calls:
-                    print(f'Received tool call [{tool_call.name}], id [{tool_call.id}], arguments [{tool_call.arguments}].')
-
                     arguments = json.loads(tool_call.arguments)
 
                     if asyncio.iscoroutinefunction(self.callback):
@@ -101,8 +97,6 @@ class PromptTool(BaseTool):
                         content = self.callback(tool_call.name, **arguments)
 
                     if content is not None:
-                        print(f'Received response from tool callback [{tool_call.name}]: {content}')
-
                         responses.append(input_types.ConversationToolResponseInput(id=tool_call.id, content=content))
 
                 if len(responses) > 0:
