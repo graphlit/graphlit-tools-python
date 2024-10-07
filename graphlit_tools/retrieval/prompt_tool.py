@@ -93,9 +93,9 @@ class PromptTool(BaseTool):
                         arguments = json.loads(tool_call.arguments)
 
                         if asyncio.iscoroutinefunction(tool.callback):
-                            content = await tool.callback(tool_call.name, **arguments)
+                            content = await tool.callback(**arguments)
                         else:
-                            content = tool.callback(tool_call.name, **arguments)
+                            content = tool.callback(**arguments)
 
                         if content is not None:
                             responses.append(input_types.ConversationToolResponseInput(id=tool_call.id, content=content))
