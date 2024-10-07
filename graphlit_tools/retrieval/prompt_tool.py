@@ -27,6 +27,7 @@ class PromptToolInput(BaseModel):
     name: str = Field(description="Tool name.")
     description: Optional[str] = Field(description="Tool description.")
     args_schema: dict = Field(description="JSON schema for tool arguments.")
+    callback: Callable[..., Optional[str]] = Field(description="Function which gets called back upon tool call")
 
 class PromptTool(BaseTool):
     name = "Graphlit RAG prompt tool"
@@ -43,10 +44,9 @@ class PromptTool(BaseTool):
     correlation_id: Optional[str] = Field(None, exclude=True)
 
     tools: Optional[List[PromptToolInput]] = Field(None, exclude=True)
-    callback: Optional[Callable[[str, dict], str]] = Field(None, exclude=True)
 
     def __init__(self, graphlit: Optional[Graphlit] = None, conversation_id: Optional[str] = None, specification_id: Optional[str] = None,
-                 tools: Optional[List[PromptToolInput]] = None, callback: Optional[Callable[..., Optional[str]]] = None,
+                 tools: Optional[List[PromptToolInput]] = None,
                  correlation_id: Optional[str] = None, **kwargs):
         """
         Initializes the PromptTool.
@@ -58,7 +58,6 @@ class PromptTool(BaseTool):
             specification_id (Optional[str]): ID for the LLM specification. Will update an existing conversation. Defaults to None.
             correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
             tools (Optional[List[ToolInput]]): List of tools provided to LLM. Defaults to None.
-            callback (Optional[Callable[[str, dict], str]]): Function which gets called with tool name and arguments, and returns result from LLM tool call. Defaults to None.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
         super().__init__(**kwargs)
@@ -66,7 +65,6 @@ class PromptTool(BaseTool):
         self.conversation_id = conversation_id
         self.specification_id = specification_id
         self.tools = tools
-        self.callback = callback
         self.correlation_id = correlation_id
 
     async def _arun(self, prompt: str) -> str:
@@ -89,15 +87,18 @@ class PromptTool(BaseTool):
                 responses = []
 
                 for tool_call in message.tool_calls:
-                    arguments = json.loads(tool_call.arguments)
+                    tool = next((x for x in self.tools if x.name == tool_call.name), None)
 
-                    if asyncio.iscoroutinefunction(self.callback):
-                        content = await self.callback(tool_call.name, **arguments)
-                    else:
-                        content = self.callback(tool_call.name, **arguments)
+                    if tool is not None:
+                        arguments = json.loads(tool_call.arguments)
 
-                    if content is not None:
-                        responses.append(input_types.ConversationToolResponseInput(id=tool_call.id, content=content))
+                        if asyncio.iscoroutinefunction(tool.callback):
+                            content = await tool.callback(tool_call.name, **arguments)
+                        else:
+                            content = tool.callback(tool_call.name, **arguments)
+
+                        if content is not None:
+                            responses.append(input_types.ConversationToolResponseInput(id=tool_call.id, content=content))
 
                 if len(responses) > 0:
                     response = await self.graphlit.client.continue_conversation(
