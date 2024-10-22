@@ -19,7 +19,7 @@ setup(
     author='Unstruk Data Inc.',
     author_email='questions@graphlit.com',
     description='Graphlit Agent Tools',
-    url='https://github.com/graphlit/graphlit-tools/',
+    url='https://github.com/graphlit/graphlit-tools-python/',
     long_description=long_description,
     long_description_content_type="text/markdown",
 )

@@ -446,7 +446,8 @@ disable=raw-checker-failed,
         duplicate-code,             # R0801: Duplicate code across multiple files
         invalid-name,
         too-many-nested-blocks,
-        too-many-branches
+        too-many-branches,
+        too-many-positional-arguments
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
