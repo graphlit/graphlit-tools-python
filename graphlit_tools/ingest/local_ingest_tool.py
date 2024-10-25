@@ -15,8 +15,8 @@ class LocalIngestInput(BaseModel):
     file_path: str = Field(description="Path of local file to be ingested into knowledge base")
 
 class LocalIngestTool(BaseTool):
-    name = "Ingest Local File"
-    description = """Ingests content from local file. Returns the ID of the ingested content in knowledge base.
+    name: str = "Ingest Local File"
+    description: str = """Ingests content from local file. Returns the ID of the ingested content in knowledge base.
     Can use LookupTool to return Metadata and extracted Markdown text from content. Or, can use RetrievalTool to search within content by ID and return Metadata and relevant extracted Markdown text chunks.
     Can ingest individual Word documents, PDFs, audio recordings, videos, images, or other unstructured data."""
     args_schema: Type[BaseModel] = LocalIngestInput

@@ -30,8 +30,8 @@ class PromptToolInput(BaseModel):
     callback: Callable[..., Optional[str]] = Field(description="Function which gets called back upon tool call")
 
 class PromptTool(BaseTool):
-    name = "Graphlit RAG prompt tool"
-    description = """Accepts user prompt as string.
+    name: str = "Graphlit RAG prompt tool"
+    description: str = """Accepts user prompt as string.
     Prompts LLM with relevant content and returns completion from RAG pipeline. Returns Markdown text from LLM completion.
     Uses vector embeddings and similarity search to retrieve relevant content from knowledge base.
     Can search through web pages, PDFs, audio transcripts, and other unstructured data."""

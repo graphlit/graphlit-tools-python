@@ -12,8 +12,8 @@ class IngestInput(BaseModel):
     url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
 
 class IngestTool(BaseTool):
-    name = "Ingest File from URL"
-    description = """Ingests content from URL. Returns the ID of the ingested content in knowledge base.
+    name: str = "Ingest File from URL"
+    description: str = """Ingests content from URL. Returns the ID of the ingested content in knowledge base.
     Can use LookupTool to return Metadata and extracted Markdown text from content. Or, can use RetrievalTool to search within content by ID and return Metadata and relevant extracted Markdown text chunks.
     Can ingest individual Word documents, PDFs, audio recordings, videos, images, or other unstructured data."""
     args_schema: Type[BaseModel] = IngestInput

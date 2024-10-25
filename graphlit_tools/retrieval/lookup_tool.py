@@ -13,8 +13,8 @@ class LookupInput(BaseModel):
     content_id: str = Field(description="ID of content which has been ingested into knowledge base")
 
 class LookupTool(BaseTool):
-    name = "Graphlit content lookup tool"
-    description = """Retrieves content by ID from knowledge base.
+    name: str = "Graphlit content lookup tool"
+    description: str = """Retrieves content by ID from knowledge base.
     Returns extracted Markdown text and metadata from content."""
     args_schema: Type[BaseModel] = LookupInput
 
