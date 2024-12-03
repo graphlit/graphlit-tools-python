@@ -55,7 +55,7 @@ class GitHubIssueIngestTool(BaseTool):
     async def _arun(self, repository_name: str, repository_owner: str, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
-        personal_access_token = os.environ('GITHUB_PERSONAL_ACCESS_TOKEN')
+        personal_access_token = os.environ['GITHUB_PERSONAL_ACCESS_TOKEN']
 
         if personal_access_token is None:
             raise ToolException('Invalid GitHub personal access token. Need to assign GITHUB_PERSONAL_ACCESS_TOKEN environment variable.')

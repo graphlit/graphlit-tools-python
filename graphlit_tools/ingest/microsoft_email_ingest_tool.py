@@ -51,7 +51,7 @@ class MicrosoftEmailIngestTool(BaseTool):
     async def _arun(self, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
-        refresh_token = os.environ('MICROSOFT_EMAIL_REFRESH_TOKEN')
+        refresh_token = os.environ['MICROSOFT_EMAIL_REFRESH_TOKEN']
 
         if refresh_token is None:
             raise ToolException('Invalid Microsoft Email refresh token. Need to assign MICROSOFT_EMAIL_REFRESH_TOKEN environment variable.')

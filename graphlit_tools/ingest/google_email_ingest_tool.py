@@ -51,17 +51,17 @@ class GoogleEmailIngestTool(BaseTool):
     async def _arun(self, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
-        refresh_token = os.environ('GOOGLE_EMAIL_REFRESH_TOKEN')
+        refresh_token = os.environ['GOOGLE_EMAIL_REFRESH_TOKEN']
 
         if refresh_token is None:
             raise ToolException('Invalid Google Email refresh token. Need to assign GOOGLE_EMAIL_REFRESH_TOKEN environment variable.')
 
-        client_id = os.environ('GOOGLE_EMAIL_CLIENT_ID')
+        client_id = os.environ['GOOGLE_EMAIL_CLIENT_ID']
 
         if client_id is None:
             raise ToolException('Invalid Google Email client identifier. Need to assign GOOGLE_EMAIL_CLIENT_ID environment variable.')
 
-        client_secret = os.environ('GOOGLE_EMAIL_CLIENT_SECRET')
+        client_secret = os.environ['GOOGLE_EMAIL_CLIENT_SECRET']
 
         if client_secret is None:
             raise ToolException('Invalid Google Email client secret. Need to assign GOOGLE_EMAIL_CLIENT_SECRET environment variable.')
