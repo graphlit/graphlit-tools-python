@@ -34,7 +34,7 @@ class CrewAIConverter(CrewAIBaseTool):
         return await tool.arun(*args, **kwargs)
 
     @classmethod
-    def from_tool(cls, tool: Any, **kwargs: Any) -> "BaseTool":
+    def from_tool(cls, tool: Any, **kwargs: Any) -> "CrewAIConverter":
         if not isinstance(tool, BaseTool):
             raise ValueError(f"Expected a Graphlit tool, got {type(tool)}")
 
