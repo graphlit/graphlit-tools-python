@@ -16,7 +16,7 @@ class CrewAITool(CrewAIBaseTool):
     ) -> Any:
         tool = cast(BaseTool, self.graphlit_tool)
 
-        return tool.run(args, kwargs)
+        return tool.run(self, args, kwargs)
 
     async def _arun(
         self,
@@ -25,7 +25,7 @@ class CrewAITool(CrewAIBaseTool):
     ) -> Any:
         tool = cast(BaseTool, self.graphlit_tool)
 
-        return await tool.arun(args, kwargs)
+        return await tool.arun(self, args, kwargs)
 
     @classmethod
     def from_tool(cls, tool: Any, **kwargs: Any) -> "BaseTool":
