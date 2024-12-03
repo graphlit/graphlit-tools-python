@@ -6,7 +6,8 @@ from graphlit import Graphlit
 from graphlit_api import exceptions
 from pydantic import BaseModel, Field
 
-from ...tools import BaseTool, ToolException
+from ..base_tool import BaseTool
+from ..exceptions import ToolException
 from . import helpers
 
 logger = logging.getLogger(__name__)
