@@ -1,10 +1,12 @@
 import asyncio
 import logging
-from typing import Type, Optional
+from typing import Optional, Type
+
 from graphlit import Graphlit
 from graphlit_api import exceptions
-from langchain_core.tools import BaseTool, ToolException
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
+
+from ...tools import BaseTool, ToolException
 from . import helpers
 
 logger = logging.getLogger(__name__)

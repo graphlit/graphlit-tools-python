@@ -12,8 +12,7 @@ setup(
     version=version,
     packages=find_packages(),
     install_requires=[
-        'graphlit-client',
-        'langchain-core'
+        'graphlit-client'
     ],
     python_requires='>=3.6',
     author='Unstruk Data Inc.',

@@ -3,11 +3,13 @@ import logging
 import os
 import base64
 import mimetypes
-from typing import Type, Optional
+from typing import Optional, Type
+
 from graphlit import Graphlit
 from graphlit_api import exceptions
-from langchain_core.tools import BaseTool, ToolException
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
+
+from ...tools import BaseTool, ToolException
 
 logger = logging.getLogger(__name__)
 
