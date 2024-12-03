@@ -28,6 +28,10 @@ class RetrievalTool(BaseTool):
     graphlit: Graphlit = Field(None, exclude=True)
     search_type: Optional[enums.SearchTypes] = Field(None, exclude=True)
 
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
     def __init__(self, graphlit: Optional[Graphlit] = None, search_type: Optional[enums.SearchTypes] = None, **kwargs):
         """
         Initializes the RetrievalTool.

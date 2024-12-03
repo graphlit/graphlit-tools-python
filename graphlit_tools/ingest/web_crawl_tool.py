@@ -26,6 +26,10 @@ class WebCrawlTool(BaseTool):
     workflow_id: Optional[str] = Field(None, exclude=True)
     correlation_id: Optional[str] = Field(None, exclude=True)
 
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
         Initializes the WebCrawlTool.

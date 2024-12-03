@@ -43,6 +43,10 @@ class PromptTool(BaseTool):
 
     graphlit: Graphlit = Field(None, exclude=True)
 
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
     conversation_id: Optional[str] = Field(None, exclude=True)
     specification_id: Optional[str] = Field(None, exclude=True)
     correlation_id: Optional[str] = Field(None, exclude=True)

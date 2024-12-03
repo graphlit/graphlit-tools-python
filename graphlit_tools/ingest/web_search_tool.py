@@ -26,6 +26,10 @@ class WebSearchTool(BaseTool):
     workflow_id: Optional[str] = Field(None, exclude=True)
     correlation_id: Optional[str] = Field(None, exclude=True)
 
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
+
     def __init__(self, graphlit: Optional[Graphlit] = None, correlation_id: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
