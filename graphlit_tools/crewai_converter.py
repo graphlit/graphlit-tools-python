@@ -4,8 +4,8 @@ from crewai_tools.tools.base_tool import BaseTool as CrewAIBaseTool
 
 from .base_tool import BaseTool
 
-class CrewAITool(CrewAIBaseTool):
-    """Tool to wrap Graphlit tools into CrewAI tools."""
+class CrewAIConverter(CrewAIBaseTool):
+    """Tool to convert Graphlit tools into CrewAI tools."""
 
     graphlit_tool: Any
 
@@ -35,9 +35,7 @@ class CrewAITool(CrewAIBaseTool):
         tool = cast(BaseTool, tool)
 
         if tool.args_schema is None:
-            raise ValueError(
-                "The Graphlit tool does not have an args_schema specified."
-            )
+            raise ValueError("Invalid arguments JSON schema.")
 
         return cls(
             name=tool.name,

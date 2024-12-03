@@ -8,5 +8,5 @@ from .graphlit_tools import (
     WebScrapeTool,
     WebCrawlTool,
     WebSearchTool,
-    CrewAITool
+    CrewAIConverter
 )
