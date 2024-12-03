@@ -7,5 +7,6 @@ from .graphlit_tools import (
     LocalIngestTool,
     WebScrapeTool,
     WebCrawlTool,
-    WebSearchTool
+    WebSearchTool,
+    CrewAITool
 )

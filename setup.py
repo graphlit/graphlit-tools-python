@@ -12,7 +12,8 @@ setup(
     version=version,
     packages=find_packages(),
     install_requires=[
-        'graphlit-client'
+        'graphlit-client',
+        'crewai-tools'
     ],
     python_requires='>=3.6',
     author='Unstruk Data Inc.',

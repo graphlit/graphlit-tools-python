@@ -1,4 +1,5 @@
 from .base_tool import BaseTool
+from .crewai_tool import CrewAITool
 from .exceptions import ToolException
 from .retrieval.retrieval_tool import RetrievalTool
 from .retrieval.lookup_tool import LookupTool
