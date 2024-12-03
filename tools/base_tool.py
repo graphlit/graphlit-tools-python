@@ -1,12 +1,6 @@
 from abc import abstractmethod
 from typing import Any, Type
-from pydantic import BaseModel, Field
-
-class _SchemaFactory(BaseModel):
-    """
-    A placeholder schema class used as the default for args_schema.
-    Replace or extend this class as needed with a specific argument schema.
-    """
+from pydantic import BaseModel
 
 class BaseTool(BaseModel):
     """
@@ -17,9 +11,9 @@ class BaseTool(BaseModel):
         description (str): A short description of the tool's functionality.
         args_schema (Type[BaseModel]): The schema for arguments expected by the tool.
     """
-    name: str = Field(...)
-    description: str = Field(...)
-    args_schema: Type[BaseModel] = Field(default_factory=_SchemaFactory)
+    name: str
+    description: str
+    args_schema: Type[BaseModel]
 
     def run(
         self,
@@ -92,3 +86,8 @@ class BaseTool(BaseModel):
         Returns:
             Any: The result of executing the tool asynchronously.
         """
+
+    @property
+    def args(self) -> dict:
+        """Get the tool's arguments JSON schema."""
+        return self.args_schema.model_json_schema()["properties"]
