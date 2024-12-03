@@ -3,11 +3,12 @@ import logging
 from typing import Optional, Type
 
 from graphlit import Graphlit
-from graphlit_api import exceptions, input_types, enums
+from graphlit_api import exceptions, input_types
 from pydantic import BaseModel, Field
 
 from ..base_tool import BaseTool
 from ..exceptions import ToolException
+from .. import helpers
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,8 @@ class WebScrapeInput(BaseModel):
 
 class WebScrapeTool(BaseTool):
     name: str = "Graphlit web scrape tool"
-    description: str = """Scrapes web page. Returns Markdown extracted from web page."""
+    description: str = """Scrapes web page into knowledge base.
+    Returns Markdown text and metadata extracted from web page."""
     args_schema: Type[BaseModel] = WebScrapeInput
 
     graphlit: Graphlit = Field(None, exclude=True)
@@ -45,6 +47,8 @@ class WebScrapeTool(BaseTool):
         self.correlation_id = correlation_id
 
     async def _arun(self, url: str) -> Optional[str]:
+        content_id = None
+
         try:
             response = await self.graphlit.client.ingest_uri(
                 uri=url,
@@ -54,58 +58,28 @@ class WebScrapeTool(BaseTool):
             )
 
             content_id = response.ingest_uri.id if response.ingest_uri is not None else None
+        except exceptions.GraphQLClientError as e:
+            logger.error(str(e))
+            raise ToolException(str(e)) from e
 
-            if content_id is not None:
-                response = await self.graphlit.client.get_content(content_id)
+        if content_id is None:
+            return None
 
-                content = response.content
+        try:
+            response = await self.graphlit.client.get_content(
+                id=content_id
+            )
 
-                results = []
-
-                if content is not None:
-                    if content.type == enums.ContentTypes.FILE:
-                        results.append(f'## {content.file_type}: {content.file_name}')
-                    elif content.type == enums.ContentTypes.PAGE:
-                        results.append(f'## {content.type}:')
-                    else:
-                        results.append(f'## {content.type}: {content.name}')
-
-                    if content.original_date is not None:
-                        results.append(f'### Date: {content.original_date}')
-
-                    if content.uri is not None:
-                        results.append(f'### URI: {content.uri}')
-
-                    if content.document is not None:
-                        if content.document.title is not None:
-                            results.append(f'### Title: {content.document.title}')
-
-                        if content.document.author is not None:
-                            results.append(f'### Author: {content.document.author}')
-
-                    if content.pages is not None:
-                        for page in content.pages:
-                            if page.chunks is not None and len(page.chunks) > 0:
-                                results.append(f'### Page #{page.index + 1}')
-
-                                for chunk in page.chunks:
-                                    results.append(chunk.text)
-
-                                results.append('\n')
-
-                    if content.links is not None:
-                        for link in content.links[:10]: # NOTE: just return top 10 links
-                            results.append(f'### {link.link_type} Link: {link.uri}')
-
-                    results.append('\n')
-                    results.append(content.markdown)
-                    results.append('\n')
-
-                text = "\n".join(results)
-
-                return text
-            else:
+            if response.content is None:
                 return None
+
+            print(f'LocalIngestTool: Retrieved content by ID [{content_id}].')
+
+            results = helpers.format_content(response.content)
+
+            text = "\n".join(results)
+
+            return text
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e

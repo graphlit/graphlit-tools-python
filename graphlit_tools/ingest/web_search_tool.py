@@ -12,13 +12,14 @@ from ..exceptions import ToolException
 logger = logging.getLogger(__name__)
 
 class WebSearchInput(BaseModel):
-    search: str = Field(description="Search query for web pages to be ingested into knowledge base")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of web pages from web search to be ingested")
+    search: str = Field(description="Search query for web pages")
+    read_limit: Optional[int] = Field(default=None, description="Maximum number of web pages to be returned from web search")
 
 class WebSearchTool(BaseTool):
     name: str = "Graphlit web search tool"
     description: str = """Accepts search query text as string.
-    Performs web search based on search query, and ingests the related web pages into knowledge base. Returns Markdown extracted from web pages."""
+    Performs web search based on search query.
+    Returns Markdown text and metadata extracted from web pages."""
     args_schema: Type[BaseModel] = WebSearchInput
 
     graphlit: Graphlit = Field(None, exclude=True)
@@ -65,4 +66,4 @@ class WebSearchTool(BaseTool):
             else:
                 return loop.run_until_complete(self._arun(search, search_limit))
         except RuntimeError:
-            return asyncio.run(self._arun(search))
+            return asyncio.run(self._arun(search, search_limit))

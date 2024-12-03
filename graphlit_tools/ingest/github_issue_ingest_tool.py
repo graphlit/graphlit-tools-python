@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import time
+import os
 from typing import Optional, Type
 
 from graphlit import Graphlit
@@ -13,15 +14,18 @@ from .. import helpers
 
 logger = logging.getLogger(__name__)
 
-class WebCrawlInput(BaseModel):
-    url: str = Field(description="URL of web site to be crawled and ingested into knowledge base")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of web pages from web site to be crawled")
+class GitHubIssueIngestInput(BaseModel):
+    repository_name: str = Field(default=None, description="GitHub repository name")
+    repository_owner: str = Field(default=None, description="GitHub repository owner")
+    read_limit: Optional[int] = Field(default=None, description="Maximum number of issues from GitHub repository to be read")
 
-class WebCrawlTool(BaseTool):
-    name: str = "Graphlit web crawl tool"
-    description: str = """Crawls web pages from web site into knowledge base.
-    Returns Markdown text and metadata extracted from web pages."""
-    args_schema: Type[BaseModel] = WebCrawlInput
+class GitHubIssueIngestTool(BaseTool):
+    name: str = "Graphlit GitHub Issue ingest tool"
+    description: str = """Ingests issues from GitHub repository into knowledge base.
+    Accepts GitHub repository owner and repository name.
+    For example, for GitHub repository (https://github.com/openai/tiktoken), 'openai' is the repository owner, and 'tiktoken' is the repository name.
+    Returns extracted Markdown text and metadata from issues."""
+    args_schema: Type[BaseModel] = GitHubIssueIngestInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
@@ -34,12 +38,12 @@ class WebCrawlTool(BaseTool):
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
-        Initializes the WebCrawlTool.
+        Initializes the GmailIngestTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
                 If not provided, a new Graphlit instance will be created.
-            workflow_id (Optional[str]): ID for the workflow to use when ingesting web pages. Defaults to None.
+            workflow_id (Optional[str]): ID for the workflow to use when ingesting issues. Defaults to None.
             correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
@@ -48,16 +52,26 @@ class WebCrawlTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, url: str, read_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, repository_name: str, repository_owner: str, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
+
+        personal_access_token = os.environ('GITHUB_PERSONAL_ACCESS_TOKEN')
+
+        if personal_access_token is None:
+            raise ToolException('Invalid GitHub personal access token. Need to assign GITHUB_PERSONAL_ACCESS_TOKEN environment variable.')
 
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
-                    name=f'Web Feed [{url}]',
-                    type=enums.FeedTypes.WEB,
-                    web=input_types.WebFeedPropertiesInput(
-                        uri=url,
+                    name='GitHub Issue',
+                    type=enums.FeedTypes.ISSUE,
+                    issue=input_types.IssueFeedPropertiesInput(
+                        type=enums.FeedServiceTypes.GIT_HUB_ISSUES,
+                        github=input_types.GitHubIssuesFeedPropertiesInput(
+                            repositoryName=repository_name,
+                            repositoryOwner=repository_owner,
+                            personalAccessToken=personal_access_token,
+                        ),
                         readLimit=read_limit
                     ),
                     workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
@@ -105,16 +119,16 @@ class WebCrawlTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, url: str, read_limit: Optional[int] = None) -> Optional[str]:
+    def _run(self, repository_name: str, repository_owner: str, read_limit: Optional[int] = None) -> Optional[str]:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                future = asyncio.ensure_future(self._arun(url, read_limit))
+                future = asyncio.ensure_future(self._arun(repository_name, repository_owner, read_limit))
                 return loop.run_until_complete(future)
             else:
-                return loop.run_until_complete(self._arun(url, read_limit))
+                return loop.run_until_complete(self._arun(repository_name, repository_owner, read_limit))
         except RuntimeError:
-            return asyncio.run(self._arun(url, read_limit))
+            return asyncio.run(self._arun(repository_name, repository_owner, read_limit))
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:

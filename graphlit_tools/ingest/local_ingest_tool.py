@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 from ..base_tool import BaseTool
 from ..exceptions import ToolException
+from .. import helpers
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +20,9 @@ class LocalIngestInput(BaseModel):
 
 class LocalIngestTool(BaseTool):
     name: str = "Ingest Local File"
-    description: str = """Ingests content from local file. Returns the ID of the ingested content in knowledge base.
-    Can use LookupTool to return Metadata and extracted Markdown text from content. Or, can use RetrievalTool to search within content by ID and return Metadata and relevant extracted Markdown text chunks.
-    Can ingest individual Word documents, PDFs, audio recordings, videos, images, or other unstructured data."""
+    description: str = """Ingests content from local file.
+    Returns extracted Markdown text and metadata from content.
+    Can ingest individual Word documents, PDFs, audio recordings, videos, images, or any other unstructured data."""
     args_schema: Type[BaseModel] = LocalIngestInput
 
     graphlit: Graphlit = Field(None, exclude=True)
@@ -50,6 +51,8 @@ class LocalIngestTool(BaseTool):
         self.correlation_id = correlation_id
 
     async def _arun(self, file_path: str) -> Optional[str]:
+        content_id = None
+
         try:
             file_name = os.path.basename(file_path)
             content_name, _ = os.path.splitext(file_name)
@@ -63,11 +66,33 @@ class LocalIngestTool(BaseTool):
             with open(file_path, "rb") as file:
                 file_content = file.read()
 
-                base64_content = base64.b64encode(file_content).decode('utf-8')
+            base64_content = base64.b64encode(file_content).decode('utf-8')
 
-                response = await self.graphlit.client.ingest_encoded_file(content_name, base64_content, mime_type, is_synchronous=True)
+            response = await self.graphlit.client.ingest_encoded_file(content_name, base64_content, mime_type, is_synchronous=True)
 
-                return response.ingest_encoded_file.id if response.ingest_encoded_file is not None else None
+            content_id = response.ingest_encoded_file.id if response.ingest_encoded_file is not None else None
+        except exceptions.GraphQLClientError as e:
+            logger.error(str(e))
+            raise ToolException(str(e)) from e
+
+        if content_id is None:
+            return None
+
+        try:
+            response = await self.graphlit.client.get_content(
+                id=content_id
+            )
+
+            if response.content is None:
+                return None
+
+            print(f'LocalIngestTool: Retrieved content by ID [{content_id}].')
+
+            results = helpers.format_content(response.content)
+
+            text = "\n".join(results)
+
+            return text
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e

@@ -1,12 +1,18 @@
 from .graphlit_tools import (
-    RetrievalTool,
-    LookupTool,
+    DescribeImageTool,
+    PersonRetrievalTool,
+    OrganizationRetrievalTool,
+    ContentRetrievalTool,
     PromptTool,
     PromptToolInput,
-    IngestTool,
+    URLIngestTool,
     LocalIngestTool,
     WebScrapeTool,
     WebCrawlTool,
     WebSearchTool,
+    RedditIngestTool,
+    MicrosoftEmailIngestTool,
+    GoogleEmailIngestTool,
+    GitHubIssueIngestTool,
     CrewAIConverter
 )
