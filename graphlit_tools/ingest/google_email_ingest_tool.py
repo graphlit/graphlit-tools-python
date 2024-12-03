@@ -79,7 +79,7 @@ class GoogleEmailIngestTool(BaseTool):
                             clientId=client_id,
                             clientSecret=client_secret,
                         ),
-                        readLimit=read_limit
+                        readLimit=read_limit if read_limit is not None else 10
                     ),
                     workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
                 ),
