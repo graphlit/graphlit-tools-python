@@ -1,6 +1,12 @@
 from typing import Any, cast
 
-from crewai_tools.tools.base_tool import BaseTool as CrewAIBaseTool
+try:
+    from crewai_tools.tools.base_tool import BaseTool as CrewAIBaseTool
+except ImportError as e:
+    raise ImportError(
+        "CrewAIConverter requires the `crewai_tools` package. "
+        "Install it using `pip install graphlit-tools[crewai]`."
+    ) from e
 
 from .base_tool import BaseTool
 

@@ -12,9 +12,11 @@ setup(
     version=version,
     packages=find_packages(),
     install_requires=[
-        'graphlit-client',
-        'crewai-tools'
+        'graphlit-client'        
     ],
+    extras_require={
+        "crewai": ["crewai-tools"]  # Extras for CrewAI support
+    },
     python_requires='>=3.6',
     author='Unstruk Data Inc.',
     author_email='questions@graphlit.com',
