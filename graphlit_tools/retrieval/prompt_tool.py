@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 """
 Example of tool callback function:
+
 def callback(tool_name, **kwargs):
     if tool_name == 'add_numbers':
         return add_numbers(**kwargs)
@@ -30,7 +31,7 @@ class PromptToolInput(BaseModel):
     name: str = Field(description="Tool name.")
     description: Optional[str] = Field(description="Tool description.")
     parameters: dict = Field(description="JSON schema for tool parameters.")
-    callback: Callable[..., Optional[str]] = Field(description="Function which gets called back upon tool call")
+    callback: Callable[..., Optional[str]] = Field(description="Function which gets called back upon tool call.")
 
 class PromptTool(BaseTool):
     name: str = "Graphlit RAG prompt tool"

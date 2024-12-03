@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Any, Type
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class BaseTool(BaseModel):
     """
@@ -14,6 +14,8 @@ class BaseTool(BaseModel):
     name: str
     description: str
     args_schema: Type[BaseModel]
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def run(
         self,
