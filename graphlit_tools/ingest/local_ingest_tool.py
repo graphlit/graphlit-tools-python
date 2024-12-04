@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import base64
@@ -98,12 +97,4 @@ class LocalIngestTool(BaseTool):
             raise ToolException(str(e)) from e
 
     def _run(self, file_path: str) -> Optional[str]:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(file_path))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(file_path))
-        except RuntimeError:
-            return asyncio.run(self._arun(file_path))
+        return helpers.run_async(self._arun, file_path)

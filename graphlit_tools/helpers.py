@@ -1,4 +1,5 @@
-from typing import List, Optional
+import asyncio
+from typing import Callable, Optional, List, Any, Coroutine
 from graphlit_api import enums
 
 def format_person(person) -> List[str]:
@@ -135,3 +136,29 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
         results.append("\n")
 
     return results
+
+def run_async(coro_func: Callable[..., Coroutine[Any, Any, Any]], *args, **kwargs) -> Any:
+    """
+    Runs an async function synchronously, handling event loops properly.
+
+    Args:
+        coro_func: The asynchronous function to be run.
+        *args: Positional arguments to pass to the async function.
+        **kwargs: Keyword arguments to pass to the async function.
+
+    Returns:
+        The result of the async function execution.
+    """
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # If the loop is already running, ensure the coroutine runs within it
+            return loop.run_until_complete(coro_func(*args, **kwargs))
+        else:
+            # If no loop is running, use asyncio.run
+            return asyncio.run(coro_func(*args, **kwargs))
+    except RuntimeError:
+        # Handle case where the event loop is closed
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+        return new_loop.run_until_complete(coro_func(*args, **kwargs))

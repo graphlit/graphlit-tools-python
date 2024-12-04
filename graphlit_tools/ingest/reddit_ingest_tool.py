@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import time
 from typing import Optional, Type
@@ -106,15 +105,7 @@ class RedditIngestTool(BaseTool):
             raise ToolException(str(e)) from e
 
     def _run(self, subreddit_name: str, read_limit: Optional[int] = None) -> Optional[str]:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(subreddit_name, read_limit))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(subreddit_name, read_limit))
-        except RuntimeError:
-            return asyncio.run(self._arun(subreddit_name, read_limit))
+        return helpers.run_async(self._arun, subreddit_name, read_limit)
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:

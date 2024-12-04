@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import time
 import os
@@ -114,16 +113,8 @@ class MicrosoftEmailIngestTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, read_limit: Optional[int] = None) -> Optional[str]:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(read_limit))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(read_limit))
-        except RuntimeError:
-            return asyncio.run(self._arun(read_limit))
+    def _run(self, read_limit: Optional[int] = None) -> str:
+        return helpers.run_async(self._arun, read_limit)
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:

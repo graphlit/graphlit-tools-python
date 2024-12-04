@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from typing import Optional, Type
 
@@ -8,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from ..base_tool import BaseTool
 from ..exceptions import ToolException
+from .. import helpers
 
 logger = logging.getLogger(__name__)
 
@@ -73,12 +73,4 @@ class DescribeImageTool(BaseTool):
             raise ToolException(str(e)) from e
 
     def _run(self, prompt: str, uri: str) -> str:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(prompt, uri))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(prompt, uri))
-        except RuntimeError:
-            return asyncio.run(self._arun(prompt, uri))
+        return helpers.run_async(self._arun, prompt, uri)

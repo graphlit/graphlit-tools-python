@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from typing import Optional, Type, List
 
@@ -77,12 +76,4 @@ class ContentRetrievalTool(BaseTool):
             raise ToolException(str(e)) from e
 
     def _run(self, search: str = None, types: Optional[List[enums.ContentTypes]] = None, limit: Optional[int] = None) -> Optional[str]:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(search, types, limit))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(search, types, limit))
-        except RuntimeError:
-            return asyncio.run(self._arun(search, types, limit))
+        return helpers.run_async(self._arun, search, types, limit)

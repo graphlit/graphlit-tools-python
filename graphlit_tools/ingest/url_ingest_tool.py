@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from typing import Optional, Type
 
@@ -86,12 +85,4 @@ class URLIngestTool(BaseTool):
             raise ToolException(str(e)) from e
 
     def _run(self, url: str) -> Optional[str]:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                future = asyncio.ensure_future(self._arun(url))
-                return loop.run_until_complete(future)
-            else:
-                return loop.run_until_complete(self._arun(url))
-        except RuntimeError:
-            return asyncio.run(self._arun(url))
+        return helpers.run_async(self._arun, url)
