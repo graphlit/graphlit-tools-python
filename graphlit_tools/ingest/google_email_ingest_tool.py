@@ -116,7 +116,7 @@ class GoogleEmailIngestTool(BaseTool):
             results = []
 
             for content in contents:
-                results.append(helpers.format_content(content))
+                results.extend(helpers.format_content(content))
 
             text = "\n".join(results)
 
