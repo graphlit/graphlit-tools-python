@@ -87,7 +87,7 @@ class PromptTool(BaseTool):
             )
 
             if response.prompt_conversation is None or response.prompt_conversation.conversation is None or response.prompt_conversation.message is None:
-                logger.log('Failed to prompt conversation.')
+                logger.debug('Failed to prompt conversation.')
                 return None
 
             message = response.prompt_conversation.message

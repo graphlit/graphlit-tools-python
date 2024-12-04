@@ -57,7 +57,7 @@ class DescribeImageTool(BaseTool):
             )
 
             if response.describe_image is None or response.describe_image.message is None:
-                logger.log('Failed to describe image.')
+                logger.debug('Failed to describe image.')
                 return None
 
             message = response.describe_image.message

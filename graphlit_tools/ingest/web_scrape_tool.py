@@ -72,7 +72,7 @@ class WebScrapeTool(BaseTool):
             if response.content is None:
                 return None
 
-            logger.log(f'WebScrapeTool: Retrieved content by ID [{content_id}].')
+            logger.debug(f'WebScrapeTool: Retrieved content by ID [{content_id}].')
 
             results = helpers.format_content(response.content)
 

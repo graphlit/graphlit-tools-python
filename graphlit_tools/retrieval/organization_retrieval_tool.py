@@ -57,7 +57,7 @@ class OrganizationRetrievalTool(BaseTool):
             if response.organizations is None or response.organizations.results is None:
                 return None
 
-            logger.log(f'OrganizationRetrievalTool: Retrieved [{len(response.organizations.results)}] organization(s) given search text [{search}].')
+            logger.debug(f'OrganizationRetrievalTool: Retrieved [{len(response.organizations.results)}] organization(s) given search text [{search}].')
 
             results = []
 
