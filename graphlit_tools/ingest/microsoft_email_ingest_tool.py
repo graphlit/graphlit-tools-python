@@ -141,5 +141,5 @@ class MicrosoftEmailIngestTool(BaseTool):
 
             return response.contents.results if response.contents is not None else None
         except exceptions.GraphQLClientError as e:
-            print(str(e))
+            logger.error(str(e))
             return None

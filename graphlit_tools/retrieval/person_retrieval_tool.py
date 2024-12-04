@@ -59,7 +59,7 @@ class PersonRetrievalTool(BaseTool):
             if response.persons is None or response.persons.results is None:
                 return None
 
-            print(f'PersonRetrievalTool: Retrieved [{len(response.persons.results)}] person(s) given search text [{search}].')
+            logger.log(f'PersonRetrievalTool: Retrieved [{len(response.persons.results)}] person(s) given search text [{search}].')
 
             results = []
 

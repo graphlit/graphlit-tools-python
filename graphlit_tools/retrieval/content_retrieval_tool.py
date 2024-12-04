@@ -61,7 +61,7 @@ class ContentRetrievalTool(BaseTool):
             if response.contents is None or response.contents.results is None:
                 return None
 
-            print(f'ContentRetrievalTool: Retrieved [{len(response.contents.results)}] content(s) given search text [{search}].')
+            logger.log(f'ContentRetrievalTool: Retrieved [{len(response.contents.results)}] content(s) given search text [{search}].')
 
             results = []
 
