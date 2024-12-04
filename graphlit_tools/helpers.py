@@ -111,8 +111,8 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
         results.extend([f"**{label}:** {value}" for label, value in audio_attributes if value])
 
     # Links
-    if content.links:
-        results.extend([f"**{link.link_type} Link:** {link.uri}" for link in content.links[:10]])
+    #if content.links:
+    #    results.extend([f"**{link.link_type} Link:** {link.uri}" for link in content.links[:10]])
 
     # Include text content if specified
     if include_text:
