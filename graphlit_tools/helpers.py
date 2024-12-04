@@ -84,9 +84,12 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
     if content.email:
         email_attributes = [
             ("Subject", content.email.subject),
+            ("Sensitivity", content.email.sensitivity.name if content.email.sensitivity else None),
+            ("Priority", content.email.priority.name if content.email.priority else None),
+            ("Importance", content.email.importance.name if content.email.importance else None),
             ("Labels", ', '.join(content.email.labels) if content.email.labels else None),
             ("To", ', '.join(f"{r.name} <{r.email}>" for r in content.email.to) if content.email.to else None),
-            ("From", ', '.join(f"{r.name} <{r.email}>" for r in getattr(content.email, "from", []))),
+            #("From", ', '.join(f"{r.name} <{r.email}>" for r in getattr(content.email, "from", []))),
             ("CC", ', '.join(f"{r.name} <{r.email}>" for r in content.email.cc) if content.email.cc else None),
             ("BCC", ', '.join(f"{r.name} <{r.email}>" for r in content.email.bcc) if content.email.bcc else None),
         ]
