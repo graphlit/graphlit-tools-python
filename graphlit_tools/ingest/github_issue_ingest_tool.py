@@ -37,7 +37,7 @@ class GitHubIssueIngestTool(BaseTool):
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
-        Initializes the GmailIngestTool.
+        Initializes the GitHubIssueIngestTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
@@ -96,7 +96,7 @@ class GitHubIssueIngestTool(BaseTool):
                     break
 
                 if not done:
-                    time.sleep(2)
+                    time.sleep(5)
 
             logger.debug(f'Completed feed [{feed_id}].')
         except exceptions.GraphQLClientError as e:

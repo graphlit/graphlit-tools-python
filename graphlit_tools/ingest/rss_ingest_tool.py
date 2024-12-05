@@ -1,6 +1,5 @@
 import logging
 import time
-import os
 from typing import Optional, Type
 
 from graphlit import Graphlit
@@ -13,14 +12,16 @@ from .. import helpers
 
 logger = logging.getLogger(__name__)
 
-class GoogleEmailIngestInput(BaseModel):
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of emails from Google Email account to be read")
+class RSSIngestInput(BaseModel):
+    uri: str = Field(description="RSS URI to be read and ingested into knowledge base")
+    read_limit: Optional[int] = Field(default=None, description="Maximum number of posts from RSS feed to be read")
 
-class GoogleEmailIngestTool(BaseTool):
-    name: str = "Graphlit Google Email ingest tool"
-    description: str = """Ingests emails from Google Email account into knowledge base.
-    Returns extracted Markdown text and metadata from emails."""
-    args_schema: Type[BaseModel] = GoogleEmailIngestInput
+class RSSIngestTool(BaseTool):
+    name: str = "Graphlit RSS ingest tool"
+    description: str = """Ingests posts from RSS feed into knowledge base.
+    For podcast RSS feeds, audio will be transcribed and ingested into knowledge base.
+    Returns extracted or transcribed Markdown text and metadata from RSS posts."""
+    args_schema: Type[BaseModel] = RSSIngestInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
@@ -33,12 +34,12 @@ class GoogleEmailIngestTool(BaseTool):
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
-        Initializes the GmailIngestTool.
+        Initializes the RSSIngestTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
                 If not provided, a new Graphlit instance will be created.
-            workflow_id (Optional[str]): ID for the workflow to use when ingesting emails. Defaults to None.
+            workflow_id (Optional[str]): ID for the workflow to use when ingesting posts. Defaults to None.
             correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
@@ -47,37 +48,16 @@ class GoogleEmailIngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, read_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, uri: str, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
-
-        refresh_token = os.environ['GOOGLE_EMAIL_REFRESH_TOKEN']
-
-        if refresh_token is None:
-            raise ToolException('Invalid Google Email refresh token. Need to assign GOOGLE_EMAIL_REFRESH_TOKEN environment variable.')
-
-        client_id = os.environ['GOOGLE_EMAIL_CLIENT_ID']
-
-        if client_id is None:
-            raise ToolException('Invalid Google Email client identifier. Need to assign GOOGLE_EMAIL_CLIENT_ID environment variable.')
-
-        client_secret = os.environ['GOOGLE_EMAIL_CLIENT_SECRET']
-
-        if client_secret is None:
-            raise ToolException('Invalid Google Email client secret. Need to assign GOOGLE_EMAIL_CLIENT_SECRET environment variable.')
 
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
-                    name='Google Email',
-                    type=enums.FeedTypes.EMAIL,
-                    email=input_types.EmailFeedPropertiesInput(
-                        type=enums.FeedServiceTypes.GOOGLE_EMAIL,
-                        google=input_types.GoogleEmailFeedPropertiesInput(
-                            type=enums.EmailListingTypes.PAST,
-                            refreshToken=refresh_token,
-                            clientId=client_id,
-                            clientSecret=client_secret,
-                        ),
+                    name=f'RSS Feed [{uri}]',
+                    type=enums.FeedTypes.RSS,
+                    rss=input_types.RSSFeedPropertiesInput(
+                        uri=uri,
                         readLimit=read_limit if read_limit is not None else 10
                     ),
                     workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
@@ -125,8 +105,8 @@ class GoogleEmailIngestTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, read_limit: Optional[int] = None) -> str:
-        return helpers.run_async(self._arun, read_limit)
+    def _run(self, uri: str, read_limit: Optional[int] = None) -> Optional[str]:
+        return helpers.run_async(self._arun, uri, read_limit)
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:

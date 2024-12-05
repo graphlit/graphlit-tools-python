@@ -11,8 +11,11 @@ from .graphlit_tools import (
     WebCrawlTool,
     WebSearchTool,
     RedditIngestTool,
+    RSSIngestTool,
     MicrosoftEmailIngestTool,
     GoogleEmailIngestTool,
     GitHubIssueIngestTool,
+    JiraIssueIngestTool,
+    LinearIssueIngestTool,
     CrewAIConverter
 )

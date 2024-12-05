@@ -82,7 +82,7 @@ class WebCrawlTool(BaseTool):
                     break
 
                 if not done:
-                    time.sleep(2)
+                    time.sleep(5)
 
             logger.debug(f'Completed feed [{feed_id}].')
         except exceptions.GraphQLClientError as e:
