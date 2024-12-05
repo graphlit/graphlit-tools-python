@@ -17,5 +17,8 @@ from .graphlit_tools import (
     GitHubIssueIngestTool,
     JiraIssueIngestTool,
     LinearIssueIngestTool,
+    MicrosoftTeamsIngestTool,
+    DiscordIngestTool,
+    SlackIngestTool,
     CrewAIConverter
 )

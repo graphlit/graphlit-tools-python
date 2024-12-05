@@ -17,4 +17,7 @@ from .ingest.google_email_ingest_tool import GoogleEmailIngestTool
 from .ingest.github_issue_ingest_tool import GitHubIssueIngestTool
 from .ingest.jira_issue_ingest_tool import JiraIssueIngestTool
 from .ingest.linear_issue_ingest_tool import LinearIssueIngestTool
+from .ingest.microsoft_teams_ingest_tool import MicrosoftTeamsIngestTool
+from .ingest.discord_ingest_tool import DiscordIngestTool
+from .ingest.slack_ingest_tool import SlackIngestTool
 from .ingest.rss_ingest_tool import RSSIngestTool

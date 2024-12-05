@@ -13,14 +13,16 @@ from .. import helpers
 
 logger = logging.getLogger(__name__)
 
-class MicrosoftEmailIngestInput(BaseModel):
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of emails from Microsoft Email account to be read")
+class DiscordIngestInput(BaseModel):
+    channel_name: str = Field(default=None, description="Discord channel name")
+    read_limit: Optional[int] = Field(default=None, description="Maximum number of messages from Discord channel to be read")
 
-class MicrosoftEmailIngestTool(BaseTool):
-    name: str = "Graphlit Microsoft Email ingest tool"
-    description: str = """Ingests emails from Microsoft Email account into knowledge base.
-    Returns extracted Markdown text and metadata from emails."""
-    args_schema: Type[BaseModel] = MicrosoftEmailIngestInput
+class DiscordIngestTool(BaseTool):
+    name: str = "Graphlit Discord ingest tool"
+    description: str = """Ingests messages from Discord channel into knowledge base.
+    Accepts Discord channel name.
+    Returns extracted Markdown text and metadata from messages."""
+    args_schema: Type[BaseModel] = DiscordIngestInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
@@ -33,12 +35,12 @@ class MicrosoftEmailIngestTool(BaseTool):
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
-        Initializes the MicrosoftEmailIngestTool.
+        Initializes the DiscordIngestTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
                 If not provided, a new Graphlit instance will be created.
-            workflow_id (Optional[str]): ID for the workflow to use when ingesting emails. Defaults to None.
+            workflow_id (Optional[str]): ID for the workflow to use when ingesting messages. Defaults to None.
             correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
@@ -47,25 +49,24 @@ class MicrosoftEmailIngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, read_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, channel_name: str, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
-        refresh_token = os.environ['MICROSOFT_EMAIL_REFRESH_TOKEN']
+        token = os.environ['DISCORD_BOT_TOKEN']
 
-        if refresh_token is None:
-            raise ToolException('Invalid Microsoft Email refresh token. Need to assign MICROSOFT_EMAIL_REFRESH_TOKEN environment variable.')
+        if token is None:
+            raise ToolException('Invalid Discord bot token. Need to assign DISCORD_BOT_TOKEN environment variable.')
 
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
-                    name='Microsoft Email',
-                    type=enums.FeedTypes.EMAIL,
-                    email=input_types.EmailFeedPropertiesInput(
-                        type=enums.FeedServiceTypes.MICROSOFT_EMAIL,
-                        microsoft=input_types.MicrosoftEmailFeedPropertiesInput(
-                            type=enums.EmailListingTypes.PAST,
-                            refreshToken=refresh_token
-                        ),
+                    name='Discord',
+                    type=enums.FeedTypes.DISCORD,
+                    discord=input_types.DiscordFeedPropertiesInput(
+                        type=enums.FeedListingTypes.PAST,
+                        channel=channel_name,
+                        token=token,
+                        includeAttachments=True,
                         readLimit=read_limit if read_limit is not None else 10
                     ),
                     workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
@@ -113,8 +114,8 @@ class MicrosoftEmailIngestTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, read_limit: Optional[int] = None) -> str:
-        return helpers.run_async(self._arun, read_limit)
+    def _run(self, channel_name: str, read_limit: Optional[int] = None) -> str:
+        return helpers.run_async(self._arun, channel_name, read_limit)
 
     async def is_feed_done(self, feed_id: str):
         if self.graphlit.client is None:
