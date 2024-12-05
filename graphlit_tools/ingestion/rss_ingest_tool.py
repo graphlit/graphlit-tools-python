@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class RSSIngestInput(BaseModel):
     uri: str = Field(description="RSS URI to be read and ingested into knowledge base")
+    search: Optional[str] = Field(default=None, description="Text to search for within ingested posts and/or transcripts")
     read_limit: Optional[int] = Field(default=None, description="Maximum number of posts from RSS feed to be read")
 
 class RSSIngestTool(BaseTool):
@@ -48,7 +49,7 @@ class RSSIngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, uri: str, read_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, uri: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
         try:
@@ -77,7 +78,7 @@ class RSSIngestTool(BaseTool):
             time.sleep(5)
 
             while not done:
-                done = await self.is_feed_done(feed_id)
+                done = await helpers.is_feed_done(self.graphlit.client, feed_id)
 
                 if done is None:
                     break
@@ -90,48 +91,7 @@ class RSSIngestTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-        try:
-            contents = await self.query_contents(feed_id)
+        return await helpers.format_feed_contents(self.graphlit.client, feed_id, search)
 
-            results = []
-
-            for content in contents:
-                results.extend(helpers.format_content(content))
-
-            text = "\n".join(results)
-
-            return text
-        except exceptions.GraphQLClientError as e:
-            logger.error(str(e))
-            raise ToolException(str(e)) from e
-
-    def _run(self, uri: str, read_limit: Optional[int] = None) -> Optional[str]:
-        return helpers.run_async(self._arun, uri, read_limit)
-
-    async def is_feed_done(self, feed_id: str):
-        if self.graphlit.client is None:
-            return None
-
-        response = await self.graphlit.client.is_feed_done(feed_id)
-
-        return response.is_feed_done.result if response.is_feed_done is not None else None
-
-    async def query_contents(self, feed_id: str):
-        if self.graphlit.client is None:
-            return None
-
-        try:
-            response = await self.graphlit.client.query_contents(
-                filter=input_types.ContentFilter(
-                    feeds=[
-                        input_types.EntityReferenceFilter(
-                            id=feed_id
-                        )
-                    ]
-                )
-            )
-
-            return response.contents.results if response.contents is not None else None
-        except exceptions.GraphQLClientError as e:
-            logger.error(str(e))
-            return None
+    def _run(self, uri: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
+        return helpers.run_async(self._arun, uri, search, read_limit)

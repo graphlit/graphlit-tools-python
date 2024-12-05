@@ -1,6 +1,7 @@
 import asyncio
 from typing import Callable, Optional, List, Any, Coroutine
-from graphlit_api import enums
+from graphlit_api import exceptions, input_types, enums
+from .exceptions import ToolException
 
 def format_person(person) -> List[str]:
     results = []
@@ -114,8 +115,9 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
         results.extend([f"**{label}:** {value}" for label, value in audio_attributes if value])
 
     # Links
-    #if content.links:
-    #    results.extend([f"**{link.link_type} Link:** {link.uri}" for link in content.links[:10]])
+    if content.links:
+        if content.type in [enums.ContentTypes.PAGE]:
+            results.extend([f"**{link.link_type} Link:** {link.uri}" for link in content.links[:100]])
 
     # Include text content if specified
     if include_text:
@@ -165,3 +167,43 @@ def run_async(coro_func: Callable[..., Coroutine[Any, Any, Any]], *args, **kwarg
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         return new_loop.run_until_complete(coro_func(*args, **kwargs))
+
+async def is_feed_done(client, feed_id: str):
+    response = await client.is_feed_done(feed_id)
+
+    return response.is_feed_done.result if response.is_feed_done is not None else None
+
+async def query_contents(client, feed_id: str, search: Optional[str] = None):
+    try:
+        response = await client.query_contents(
+            filter=input_types.ContentFilter(
+                search=search,
+                searchType=enums.SearchTypes.HYBRID,
+                feeds=[
+                    input_types.EntityReferenceFilter(
+                        id=feed_id
+                    )
+                ]
+            )
+        )
+
+        return response.contents.results if response.contents is not None else None
+    except exceptions.GraphQLClientError as e:
+        print(str(e))
+        return None
+
+async def format_feed_contents(client, feed_id: str, search: Optional[str] = None):
+    try:
+        contents = await query_contents(client, feed_id, search)
+
+        results = []
+
+        for content in contents:
+            results.extend(format_content(content))
+
+        text = "\n".join(results)
+
+        return text
+    except exceptions.GraphQLClientError as e:
+        print(str(e))
+        raise ToolException(str(e)) from e

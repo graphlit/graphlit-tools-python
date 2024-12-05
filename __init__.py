@@ -11,6 +11,7 @@ from .graphlit_tools import (
     WebCrawlTool,
     WebSearchTool,
     RedditIngestTool,
+    NotionIngestTool,
     RSSIngestTool,
     MicrosoftEmailIngestTool,
     GoogleEmailIngestTool,
