@@ -14,7 +14,7 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class JiraIssueIngestInput(BaseModel):
-    uri: str = Field(default=None, description="Atlassian Jira server URI")
+    url: str = Field(default=None, description="Atlassian Jira server URL")
     project: str = Field(default=None, description="Atlassian Jira project name")
     search: Optional[str] = Field(default=None, description="Text to search for within ingested issues")
     read_limit: Optional[int] = Field(default=None, description="Maximum number of issues from Jira to be read")
@@ -22,7 +22,7 @@ class JiraIssueIngestInput(BaseModel):
 class JiraIssueIngestTool(BaseTool):
     name: str = "Graphlit Jira ingest tool"
     description: str = """Ingests issues from Atlassian Jira into knowledge base.
-    Accepts Atlassian Jira server URI and project name.
+    Accepts Atlassian Jira server URL and project name.
     Returns extracted Markdown text and metadata from issues."""
     args_schema: Type[BaseModel] = JiraIssueIngestInput
 
@@ -51,7 +51,7 @@ class JiraIssueIngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, uri: str, project: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, url: str, project: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
         email = os.environ['JIRA_EMAIL']
@@ -72,7 +72,7 @@ class JiraIssueIngestTool(BaseTool):
                     issue=input_types.IssueFeedPropertiesInput(
                         type=enums.FeedServiceTypes.ATLASSIAN_JIRA,
                         jira=input_types.AtlassianJiraFeedPropertiesInput(
-                            uri=uri,
+                            uri=url,
                             project=project,
                             email=email,
                             token=token,
@@ -111,5 +111,5 @@ class JiraIssueIngestTool(BaseTool):
 
         return await helpers.format_feed_contents(self.graphlit.client, feed_id, search)
 
-    def _run(self, uri: str, project: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
-        return helpers.run_async(self._arun, uri, project, search, read_limit)
+    def _run(self, url: str, project: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
+        return helpers.run_async(self._arun, url, project, search, read_limit)

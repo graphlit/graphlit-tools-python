@@ -12,11 +12,11 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class WebMapInput(BaseModel):
-    uri: str = Field(description="URI of the web page to be mapped")
+    url: str = Field(description="URL of the web page to be mapped")
 
 class WebMapTool(BaseTool):
     name: str = "Graphlit web map tool"
-    description: str = """Accepts web page URI as string.
+    description: str = """Accepts web page URL as string.
     Enumerates the web pages at or beneath the provided URL using web sitemap.
     Returns list of mapped URIs from web site."""
     args_schema: Type[BaseModel] = WebMapInput
@@ -35,10 +35,10 @@ class WebMapTool(BaseTool):
         self.graphlit = graphlit or Graphlit()
         self.correlation_id = correlation_id
 
-    async def _arun(self, uri: str) -> Optional[str]:
+    async def _arun(self, url: str) -> Optional[str]:
         try:
             response = await self.graphlit.client.map_web(
-                uri=uri,
+                uri=url,
                 correlation_id=self.correlation_id
             )
 
@@ -54,5 +54,5 @@ class WebMapTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, uri: str) -> Optional[str]:
-        return helpers.run_async(self._arun, uri)
+    def _run(self, url: str) -> Optional[str]:
+        return helpers.run_async(self._arun, url)

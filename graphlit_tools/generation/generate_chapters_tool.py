@@ -46,7 +46,7 @@ class GenerateChaptersTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, text: str, count: Optional[int] = None) -> str:
+    async def _arun(self, text: str) -> str:
         try:
             response = await self.graphlit.client.summarize_text(
                 text=text,

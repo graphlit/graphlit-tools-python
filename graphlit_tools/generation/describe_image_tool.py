@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 
 class DescribeImageInput(BaseModel):
     prompt: str = Field(description="Text prompt which is provided to vision LLM for completion.")
-    uri: str = Field(description="URI for image to be described with vision LLM.")
+    url: str = Field(description="URL for image to be described with vision LLM.")
 
 class DescribeImageTool(BaseTool):
     name: str = "Graphlit image description tool"
-    description: str = """Accepts image URI as string.
+    description: str = """Accepts image URL as string.
     Prompts vision LLM and returns completion. Returns Markdown text from LLM completion."""
     args_schema: Type[BaseModel] = DescribeImageInput
 
@@ -47,12 +47,12 @@ class DescribeImageTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, prompt: str, uri: str) -> str:
+    async def _arun(self, prompt: str, url: str) -> str:
         try:
             response = await self.graphlit.client.describe_image(
                 specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
                 prompt=prompt,
-                uri=uri,
+                uri=url,
                 correlation_id=self.correlation_id
             )
 
@@ -72,5 +72,5 @@ class DescribeImageTool(BaseTool):
             print(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, prompt: str, uri: str) -> str:
-        return helpers.run_async(self._arun, prompt, uri)
+    def _run(self, prompt: str, url: str) -> str:
+        return helpers.run_async(self._arun, prompt, url)

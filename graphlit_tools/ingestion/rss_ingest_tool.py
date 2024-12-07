@@ -13,7 +13,7 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class RSSIngestInput(BaseModel):
-    uri: str = Field(description="RSS URI to be read and ingested into knowledge base")
+    url: str = Field(description="RSS URL to be read and ingested into knowledge base")
     search: Optional[str] = Field(default=None, description="Text to search for within ingested posts and/or transcripts")
     read_limit: Optional[int] = Field(default=None, description="Maximum number of posts from RSS feed to be read")
 
@@ -49,16 +49,16 @@ class RSSIngestTool(BaseTool):
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, uri: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, url: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
         feed_id = None
 
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
-                    name=f'RSS Feed [{uri}]',
+                    name=f'RSS Feed [{url}]',
                     type=enums.FeedTypes.RSS,
                     rss=input_types.RSSFeedPropertiesInput(
-                        uri=uri,
+                        uri=url,
                         readLimit=read_limit if read_limit is not None else 10
                     ),
                     workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
@@ -93,5 +93,5 @@ class RSSIngestTool(BaseTool):
 
         return await helpers.format_feed_contents(self.graphlit.client, feed_id, search)
 
-    def _run(self, uri: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
-        return helpers.run_async(self._arun, uri, search, read_limit)
+    def _run(self, url: str, search: Optional[str] = None, read_limit: Optional[int] = None) -> Optional[str]:
+        return helpers.run_async(self._arun, url, search, read_limit)
