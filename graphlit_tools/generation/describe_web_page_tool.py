@@ -23,6 +23,7 @@ class DescribeWebPageTool(BaseTool):
 
     graphlit: Graphlit = Field(None, exclude=True)
 
+    specification_id: Optional[str] = Field(None, exclude=True)
     workflow_id: Optional[str] = Field(None, exclude=True)
     correlation_id: Optional[str] = Field(None, exclude=True)
 
@@ -30,7 +31,7 @@ class DescribeWebPageTool(BaseTool):
         "arbitrary_types_allowed": True
     }
 
-    def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
+    def __init__(self, graphlit: Optional[Graphlit] = None, specification_id: Optional[str] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
         Initializes the DescribeWebPageTool.
 
@@ -43,6 +44,7 @@ class DescribeWebPageTool(BaseTool):
         """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
+        self.specification_id = specification_id
         self.workflow_id = workflow_id
         self.correlation_id = correlation_id
 
