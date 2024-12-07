@@ -36,7 +36,7 @@ class WebSearchTool(BaseTool):
         self.graphlit = graphlit or Graphlit()
         self.correlation_id = correlation_id
 
-    async def _arun(self, search: str, search_limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, search: str, search_limit: Optional[int] = None, **kwargs) -> Optional[str]:
         try:
             response = await self.graphlit.client.search_web(
                 type=enums.SearchServiceTypes.TAVILY,
@@ -57,5 +57,5 @@ class WebSearchTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, search: str, search_limit: Optional[int] = None) -> Optional[str]:
+    def _run(self, search: str, search_limit: Optional[int] = None, **kwargs) -> Optional[str]:
         return helpers.run_async(self._arun, search, search_limit)

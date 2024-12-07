@@ -82,6 +82,9 @@ class DescribeWebPageTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
+        if content.image_uri is None:
+            return None
+
         # NOTE: if we've already analyzed the image, via workflow, return the image description
         if content.image.description is not None:
             return content.image.description
