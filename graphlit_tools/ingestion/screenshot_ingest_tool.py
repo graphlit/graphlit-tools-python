@@ -11,15 +11,14 @@ from .. import helpers
 
 logger = logging.getLogger(__name__)
 
-class URLIngestInput(BaseModel):
-    url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
+class ScreenshotIngestInput(BaseModel):
+    url: str = Field(description="URL of web page to screenshot and ingest into knowledge base")
 
-class URLIngestTool(BaseTool):
-    name: str = "Graphlit URL ingest tool"
-    description: str = """Ingests content from URL.
-    Returns extracted Markdown text and metadata from content.
-    Can ingest individual Word documents, PDFs, audio recordings, videos, images, or any other unstructured data."""
-    args_schema: Type[BaseModel] = URLIngestInput
+class ScreenshotIngestTool(BaseTool):
+    name: str = "Graphlit screenshot web page tool"
+    description: str = """Screenshots web page from URL.
+    Returns extracted Markdown text and metadata from image."""
+    args_schema: Type[BaseModel] = ScreenshotIngestInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
@@ -32,7 +31,7 @@ class URLIngestTool(BaseTool):
 
     def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
-        Initializes the IngestTool.
+        Initializes the ScreenshotIngestTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
@@ -50,14 +49,14 @@ class URLIngestTool(BaseTool):
         content_id = None
 
         try:
-            response = await self.graphlit.client.ingest_uri(
+            response = await self.graphlit.client.screenshot_page(
                 uri=url,
                 workflow=input_types.EntityReferenceInput(id=self.workflow_id) if self.workflow_id is not None else None,
                 is_synchronous=True,
                 correlation_id=self.correlation_id
             )
 
-            content_id = response.ingest_uri.id if response.ingest_uri is not None else None
+            content_id = response.screenshot_page.id if response.screenshot_page is not None else None
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
@@ -73,7 +72,7 @@ class URLIngestTool(BaseTool):
             if response.content is None:
                 return None
 
-            logger.debug(f'URLIngestTool: Retrieved content by ID [{content_id}].')
+            logger.debug(f'ScreenshotIngestTool: Retrieved content by ID [{content_id}].')
 
             results = helpers.format_content(response.content)
 

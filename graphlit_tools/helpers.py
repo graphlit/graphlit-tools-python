@@ -114,6 +114,16 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
         ]
         results.extend([f"**{label}:** {value}" for label, value in audio_attributes if value])
 
+    # Image details
+    if content.image:
+        image_attributes = [
+            ("Description", content.image.description),
+            ("Software", content.image.software),
+            ("Make", content.image.make),
+            ("Model", content.image.model),
+        ]
+        results.extend([f"**{label}:** {value}" for label, value in image_attributes if value])
+
     # Links
     if content.links:
         if content.type in [enums.ContentTypes.PAGE]:
@@ -134,7 +144,13 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
                 results.append(segment.text)
                 results.append("\n---\n")
 
-        if not content.pages and not content.segments and content.markdown:
+        if content.frames:
+            for frame in content.frames:
+                results.append(f"**Frame #{frame.index + 1}:**")
+                results.append(frame.text)
+                results.append("\n---\n")
+
+        if not content.pages and not content.segments and not content.frames and content.markdown:
             results.append(content.markdown)
             results.append("\n")
     else:
