@@ -50,7 +50,7 @@ class WebSearchTool(BaseTool):
             if results is not None:
                 logger.debug(f'Completed web search, found [{len(results)}] results.')
 
-                return '\n\n'.join(result.text for result in results) if results is not None else None
+                return '\n\n'.join(f'URL: {result.uri}\nTitle: {result.title}\n\n{result.text}' for result in results) if results is not None else None
             else:
                 return None
         except exceptions.GraphQLClientError as e:
