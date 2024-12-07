@@ -13,10 +13,10 @@ Before you begin, ensure you have the following:
 
 ## Installation
 
-To install the Graphlit Agent Tools, use pip:
+To install the Graphlit Agent Tools with CrewAI, use pip:
 
 ```bash
-pip install graphlit-tools
+pip install graphlit-tools[crewai]
 ```
 
 ## Configuration
