@@ -14,8 +14,8 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class MicrosoftEmailIngestInput(BaseModel):
-    search: Optional[str] = Field(default=None, description="Text to search for within ingested email")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of emails from Microsoft Email account to be read")
+    search: Optional[str] = Field(description="Text to search for within ingested email.", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of emails from Microsoft Email account to be read.", default=10)
 
 class MicrosoftEmailIngestTool(BaseTool):
     name: str = "Graphlit Microsoft Email ingest tool"

@@ -14,10 +14,10 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class MicrosoftTeamsIngestInput(BaseModel):
-    team_name: str = Field(default=None, description="Microsoft Teams team name")
-    channel_name: str = Field(default=None, description="Microsoft Teams channel name")
-    search: Optional[str] = Field(default=None, description="Text to search for within ingested messages")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of messages from Microsoft Teams channel to be read")
+    team_name: str = Field(description="Microsoft Teams team name")
+    channel_name: str = Field(description="Microsoft Teams channel name")
+    search: Optional[str] = Field(description="Text to search for within ingested messages.", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of messages from Microsoft Teams channel to be read.", default=10)
 
 class MicrosoftTeamsIngestTool(BaseTool):
     name: str = "Graphlit Microsoft Teams ingest tool"

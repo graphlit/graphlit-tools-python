@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 class PersonRetrievalInput(BaseModel):
     search: str = Field(description="Text to search for within the knowledge base")
-    email: Optional[str] = Field(description="Email of person to retrieve")
-    limit: Optional[int] = Field(default=None, description="Number of persons to return from search query, optional")
+    email: Optional[str] = Field(description="Email of person to retrieve.", default=None)
+    limit: Optional[int] = Field(description="Number of persons to return from search query, optional.", default=10)
 
 class PersonRetrievalTool(BaseTool):
     name: str = "Graphlit person retrieval tool"

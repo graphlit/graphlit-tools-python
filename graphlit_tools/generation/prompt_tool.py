@@ -30,7 +30,7 @@ class PromptInput(BaseModel):
 
 class PromptToolInput(BaseModel):
     name: str = Field(description="Tool name.")
-    description: Optional[str] = Field(description="Tool description.")
+    description: Optional[str] = Field(description="Tool description.", default=None)
     parameters: dict = Field(description="JSON schema for tool parameters.")
     callback: Callable[..., Optional[str]] = Field(description="Function which gets called back upon tool call.")
 

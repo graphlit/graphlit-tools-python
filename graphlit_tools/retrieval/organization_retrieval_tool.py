@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class OrganizationRetrievalInput(BaseModel):
     search: str = Field(description="Text to search for within the knowledge base")
-    limit: Optional[int] = Field(default=None, description="Number of organizations to return from search query, optional")
+    limit: Optional[int] = Field(description="Number of organizations to return from search query, optional.", default=10)
 
 class OrganizationRetrievalTool(BaseTool):
     name: str = "Graphlit organization retrieval tool"

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class GenerateHeadlinesInput(BaseModel):
     text: str = Field(description="Text to be summarized into headlines.")
-    count: Optional[int] = Field(description="Number of headlines to be generated, optional. Defaults to 10.")
+    count: Optional[int] = Field(description="Number of headlines to be generated, optional.", default=10)
 
 class GenerateHeadlinesTool(BaseTool):
     name: str = "Graphlit headlines generation tool"

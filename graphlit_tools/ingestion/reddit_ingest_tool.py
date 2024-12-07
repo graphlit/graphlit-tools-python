@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class RedditIngestInput(BaseModel):
     subreddit_name: str = Field(description="Reddit subreddit name to be read and ingested into knowledge base")
-    search: Optional[str] = Field(default=None, description="Text to search for within ingested posts")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of posts from Reddit subreddit to be read")
+    search: Optional[str] = Field(description="Text to search for within ingested posts.", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of posts from Reddit subreddit to be read.", default=10)
 
 class RedditIngestTool(BaseTool):
     name: str = "Graphlit Reddit ingest tool"

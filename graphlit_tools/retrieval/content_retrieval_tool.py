@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 class ContentRetrievalInput(BaseModel):
     search: str = Field(description="Text to search for within the knowledge base")
-    types: Optional[List[enums.ContentTypes]] = Field(description="List of content types to be returned from knowledge base, optional")
-    limit: Optional[int] = Field(default=None, description="Number of contents to return from search query, optional")
+    types: Optional[List[enums.ContentTypes]] = Field(description="List of content types to be returned from knowledge base, optional.", default=None)
+    limit: Optional[int] = Field(description="Number of contents to return from search query, optional.", default=None)
 
 class ContentRetrievalTool(BaseTool):
     name: str = "Graphlit content retrieval tool"

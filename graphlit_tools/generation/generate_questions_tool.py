@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class GenerateQuestionsInput(BaseModel):
     text: str = Field(description="Text to be summarized into followup questions.")
-    count: Optional[int] = Field(description="Number of followup questions to be generated, optional. Defaults to 10.")
+    count: Optional[int] = Field(description="Number of followup questions to be generated, optional.", default=10)
 
 class GenerateQuestionsTool(BaseTool):
     name: str = "Graphlit followup questions generation tool"

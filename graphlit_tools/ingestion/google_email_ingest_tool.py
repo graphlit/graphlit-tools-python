@@ -14,8 +14,8 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class GoogleEmailIngestInput(BaseModel):
-    search: Optional[str] = Field(default=None, description="Text to search for within ingested email")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of emails from Google Email account to be read")
+    search: Optional[str] = Field(description="Text to search for within ingested emails.", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of emails from Google Email account to be read.", default=10)
 
 class GoogleEmailIngestTool(BaseTool):
     name: str = "Graphlit Google Email ingest tool"

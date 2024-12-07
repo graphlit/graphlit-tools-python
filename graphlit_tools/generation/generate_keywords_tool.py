@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class GenerateKeywordsInput(BaseModel):
     text: str = Field(description="Text to be summarized into keywords.")
-    count: Optional[int] = Field(description="Number of keywords to be generated, optional. Defaults to 10.")
+    count: Optional[int] = Field(description="Number of keywords to be generated, optional.", default=10)
 
 class GenerateKeywordsTool(BaseTool):
     name: str = "Graphlit keywords generation tool"

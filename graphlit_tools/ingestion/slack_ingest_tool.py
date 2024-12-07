@@ -14,9 +14,9 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class SlackIngestInput(BaseModel):
-    channel_name: str = Field(default=None, description="Slack channel name")
-    search: Optional[str] = Field(default=None, description="Text to search for within ingested messages")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of messages from Slack channel to be read")
+    channel_name: str = Field(description="Slack channel name")
+    search: Optional[str] = Field(description="Text to search for within ingested messages.", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of messages from Slack channel to be read.", default=10)
 
 class SlackIngestTool(BaseTool):
     name: str = "Graphlit Slack ingest tool"

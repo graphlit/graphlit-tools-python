@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class GenerateSummaryInput(BaseModel):
     text: str = Field(description="Text to be summarized.")
-    prompt: Optional[str] = Field(description="Text prompt which is provided to LLM for text summarization, optional.")
+    prompt: Optional[str] = Field(description="Text prompt which is provided to LLM for text summarization, optional.", default=None)
 
 class GenerateSummaryTool(BaseTool):
     name: str = "Graphlit summary generation tool"

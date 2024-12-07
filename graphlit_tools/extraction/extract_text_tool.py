@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class ExtractTextInput(BaseModel):
     text: str = Field(description="Text to be extracted with LLM.")
     model: BaseModel = Field(description="Pydantic model which describes the data which will be extracted")
-    prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.")
+    prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 
 class ExtractTextTool(BaseTool):
     name: str = "Graphlit JSON text data extraction tool"

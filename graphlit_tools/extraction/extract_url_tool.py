@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class ExtractURLInput(BaseModel):
     url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
     model: BaseModel = Field(description="Pydantic model which describes the data which will be extracted")
-    prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.")
+    prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 
 class ExtractURLTool(BaseTool):
     name: str = "Graphlit JSON URL data extraction tool"

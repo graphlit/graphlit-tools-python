@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class DescribeWebPageInput(BaseModel):
     url: str = Field(description="URL of web page to screenshot and ingest into knowledge base")
-    prompt: Optional[str] = Field(description="Text prompt which is provided to vision LLM for screenshot description, optional.")
+    prompt: Optional[str] = Field(description="Text prompt which is provided to vision LLM for screenshot description, optional.", default=None)
 
 class DescribeWebPageTool(BaseTool):
     name: str = "Graphlit screenshot web page tool"

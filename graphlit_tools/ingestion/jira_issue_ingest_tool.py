@@ -14,10 +14,10 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class JiraIssueIngestInput(BaseModel):
-    url: str = Field(default=None, description="Atlassian Jira server URL")
-    project: str = Field(default=None, description="Atlassian Jira project name")
-    search: Optional[str] = Field(default=None, description="Text to search for within ingested issues")
-    read_limit: Optional[int] = Field(default=None, description="Maximum number of issues from Jira to be read")
+    url: str = Field(description="Atlassian Jira server URL")
+    project: str = Field(description="Atlassian Jira project name")
+    search: Optional[str] = Field(description="Text to search for within ingested issues.", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of issues from Jira to be read.", default=10)
 
 class JiraIssueIngestTool(BaseTool):
     name: str = "Graphlit Jira ingest tool"
