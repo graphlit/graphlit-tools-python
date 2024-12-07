@@ -4,7 +4,9 @@ from .exceptions import ToolException
 from .retrieval.content_retrieval_tool import ContentRetrievalTool
 from .retrieval.person_retrieval_tool import PersonRetrievalTool
 from .retrieval.organization_retrieval_tool import OrganizationRetrievalTool
-from .generation.extract_text_tool import ExtractTextTool
+from .extraction.extract_text_tool import ExtractTextTool
+from .extraction.extract_url_tool import ExtractURLTool
+from .extraction.extract_web_page_tool import ExtractWebPageTool
 from .generation.prompt_tool import PromptTool, PromptToolInput
 from .generation.describe_image_tool import DescribeImageTool
 from .generation.describe_web_page_tool import DescribeWebPageTool

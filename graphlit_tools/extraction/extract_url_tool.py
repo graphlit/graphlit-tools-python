@@ -3,7 +3,7 @@ import json
 from typing import Optional, Type
 
 from graphlit import Graphlit
-from graphlit_api import exceptions, input_types
+from graphlit_api import exceptions, input_types, enums
 from pydantic import BaseModel, Field
 
 from ..base_tool import BaseTool
@@ -12,41 +12,43 @@ from .. import helpers
 
 logger = logging.getLogger(__name__)
 
-class ExtractTextInput(BaseModel):
-    text: str = Field(description="Text from which JSON data will be extracted")
+class ExtractURLInput(BaseModel):
+    url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
+    model: BaseModel = Field(description="Pydantic model which describes the data which will be extracted")
     prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.")
 
-class ExtractTextTool(BaseTool):
-    name: str = "Graphlit JSON data extraction tool"
-    description: str = """Extracts JSON data from text using LLM.
-    Returns extracted JSON from text."""
-    args_schema: Type[BaseModel] = ExtractTextInput
+class ExtractURLTool(BaseTool):
+    name: str = "Graphlit JSON URL data extraction tool"
+    description: str = """Extracts JSON data from ingested file using LLM.
+    Returns extracted JSON from file."""
+    args_schema: Type[BaseModel] = ExtractURLInput
 
     graphlit: Graphlit = Field(None, exclude=True)
 
-    specification_id: Optional[str] = Field(None, exclude=True)
     workflow_id: Optional[str] = Field(None, exclude=True)
+    specification_id: Optional[str] = Field(None, exclude=True)
     correlation_id: Optional[str] = Field(None, exclude=True)
 
     model_config = {
         "arbitrary_types_allowed": True
     }
 
-    def __init__(self, graphlit: Optional[Graphlit] = None, specification_id: Optional[str] = None, workflow_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
+    def __init__(self, graphlit: Optional[Graphlit] = None, workflow_id: Optional[str] = None, specification_id: Optional[str] = None, correlation_id: Optional[str] = None, **kwargs):
         """
-        Initializes the ExtractTextTool.
+        Initializes the ExtractURLTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
                 If not provided, a new Graphlit instance will be created.
             workflow_id (Optional[str]): ID for the workflow to use when ingesting files. Defaults to None.
+            specification_id (Optional[str]): ID for the LLM specification to use. Defaults to None.
             correlation_id (Optional[str]): Correlation ID for tracking requests. Defaults to None.
             **kwargs: Additional keyword arguments for the BaseTool superclass.
         """
         super().__init__(**kwargs)
         self.graphlit = graphlit or Graphlit()
-        self.specification_id = specification_id
         self.workflow_id = workflow_id
+        self.specification_id = specification_id
         self.correlation_id = correlation_id
 
     async def _arun(self, url: str, model: BaseModel, prompt: Optional[str] = None) -> Optional[str]:
@@ -78,7 +80,7 @@ class ExtractTextTool(BaseTool):
             if response.content is None:
                 return None
 
-            logger.debug(f'ExtractTextTool: Retrieved content by ID [{content_id}].')
+            logger.debug(f'ExtractURLTool: Retrieved content by ID [{content_id}].')
 
             results = helpers.format_content(response.content)
 
@@ -86,9 +88,6 @@ class ExtractTextTool(BaseTool):
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             raise ToolException(str(e)) from e
-
-        if text is None:
-            return None
 
         default_prompt = """
         Extract data using the tools provided.
@@ -100,6 +99,7 @@ class ExtractTextTool(BaseTool):
                 tools=[input_types.ToolDefinitionInput(name=model.__name__, schema=model.model_dump_json())],
                 prompt=default_prompt if prompt is None else prompt,
                 text=text,
+                text_type=enums.TextTypes.MARKDOWN,
                 correlation_id=self.correlation_id
             )
 

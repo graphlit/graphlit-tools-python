@@ -119,9 +119,7 @@ class DescribeWebPageTool(BaseTool):
                 logger.debug('Failed to describe screenshot.')
                 return None
 
-            message = response.describe_image.message
-
-            return message.message
+            return response.describe_image.message
         except exceptions.GraphQLClientError as e:
             logger.error(str(e))
             print(str(e))

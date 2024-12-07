@@ -10,6 +10,8 @@ from .graphlit_tools import (
     GenerateChaptersTool,
     PromptTool,
     PromptToolInput,
+    ExtractURLTool,
+    ExtractWebPageTool,
     ExtractTextTool,
     PersonRetrievalTool,
     OrganizationRetrievalTool,
