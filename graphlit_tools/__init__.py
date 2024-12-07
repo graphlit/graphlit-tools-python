@@ -12,12 +12,14 @@ from .generation.generate_headlines_tool import GenerateHeadlinesTool
 from .generation.generate_social_media_posts_tool import GenerateSocialMediaPostsTool
 from .generation.generate_questions_tool import GenerateQuestionsTool
 from .generation.generate_keywords_tool import GenerateKeywordsTool
-from .ingestion.screenshot_ingest_tool import ScreenshotIngestTool
+from .generation.generate_chapters_tool import GenerateChaptersTool
+from .generation.describe_web_page_tool import DescribeWebPageTool
 from .ingestion.url_ingest_tool import URLIngestTool
 from .ingestion.local_ingest_tool import LocalIngestTool
 from .ingestion.web_scrape_tool import WebScrapeTool
 from .ingestion.web_crawl_tool import WebCrawlTool
 from .ingestion.web_search_tool import WebSearchTool
+from .ingestion.web_map_tool import WebMapTool
 from .ingestion.reddit_ingest_tool import RedditIngestTool
 from .ingestion.notion_ingest_tool import NotionIngestTool
 from .ingestion.microsoft_email_ingest_tool import MicrosoftEmailIngestTool
