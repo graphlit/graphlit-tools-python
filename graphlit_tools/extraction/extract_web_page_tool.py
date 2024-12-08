@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 class ExtractWebPageInput(BaseModel):
     url: str = Field(description="URL of web page to be scraped and ingested into knowledge base")
-    model_name: str = Field(description="Pydantic model name which describes the data which will be extracted")
-    model_schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted")
+    schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted")
     prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 
 class ExtractWebPageTool(BaseTool):
@@ -52,7 +51,7 @@ class ExtractWebPageTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, url: str, model_name: str, model_schema: str, prompt: Optional[str] = None) -> Optional[str]:
+    async def _arun(self, url: str, schema: str, prompt: Optional[str] = None) -> Optional[str]:
         content_id = None
 
         try:
@@ -90,6 +89,8 @@ class ExtractWebPageTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
+        default_name = "extract_pydantic_model"
+
         default_prompt = """
         Extract data using the tools provided.
         """
@@ -97,7 +98,7 @@ class ExtractWebPageTool(BaseTool):
         try:
             response = await self.graphlit.client.extract_text(
                 specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
-                tools=[input_types.ToolDefinitionInput(name=model_name, schema=model_schema)],
+                tools=[input_types.ToolDefinitionInput(name=default_name, schema=schema)],
                 prompt=default_prompt if prompt is None else prompt,
                 text=text,
                 text_type=enums.TextTypes.MARKDOWN,
