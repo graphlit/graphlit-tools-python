@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 
 class ExtractWebPageInput(BaseModel):
     url: str = Field(description="URL of web page to be scraped and ingested into knowledge base")
-    model_schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include a 'properties' field.")
+    model_schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.")
     prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 
 class ExtractWebPageTool(BaseTool):
     name: str = "Graphlit JSON web page data extraction tool"
     description: str = """Extracts JSON data from ingested web page using LLM.
-    Accepts URL to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include a 'properties' field.
+    Accepts URL to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
     Returns extracted JSON from web page."""
     args_schema: Type[BaseModel] = ExtractWebPageInput
 
