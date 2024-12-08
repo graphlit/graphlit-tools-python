@@ -20,7 +20,7 @@ class ExtractWebPageInput(BaseModel):
 class ExtractWebPageTool(BaseTool):
     name: str = "Graphlit JSON web page data extraction tool"
     description: str = """Extracts JSON data from ingested web page using LLM.
-    Accepts URL to be scraped, and JSON schema of Pydantic model to be extracted into.
+    Accepts URL to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include a 'properties' field.
     Returns extracted JSON from web page."""
     args_schema: Type[BaseModel] = ExtractWebPageInput
 
