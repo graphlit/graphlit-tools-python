@@ -61,8 +61,7 @@ class GenerateKeywordsTool(BaseTool):
             )
 
             if response.summarize_text is None or response.summarize_text.items is None:
-                logger.debug('Failed to generate keywords.')
-                return None
+                raise ToolException('Failed to generate keywords.')
 
             items = response.summarize_text.items
 

@@ -78,7 +78,7 @@ class SlackIngestTool(BaseTool):
             feed_id = response.create_feed.id if response.create_feed is not None else None
 
             if feed_id is None:
-                return None
+                raise ToolException('Invalid feed identifier.')
 
             logger.debug(f'Created feed [{feed_id}].')
 

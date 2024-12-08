@@ -61,8 +61,7 @@ class GenerateSocialMediaPostsTool(BaseTool):
             )
 
             if response.summarize_text is None or response.summarize_text.items is None:
-                logger.debug('Failed to generate social media posts.')
-                return None
+                raise ToolException('Failed to generate social media posts.')
 
             items = response.summarize_text.items
 

@@ -62,7 +62,7 @@ class WebScrapeTool(BaseTool):
             raise ToolException(str(e)) from e
 
         if content_id is None:
-            return None
+            raise ToolException('Invalid content identifier.')
 
         try:
             response = await self.graphlit.client.get_content(
@@ -70,7 +70,7 @@ class WebScrapeTool(BaseTool):
             )
 
             if response.content is None:
-                return None
+                raise ToolException(f'Failed to get content [{content_id}].')
 
             logger.debug(f'WebScrapeTool: Retrieved content by ID [{content_id}].')
 

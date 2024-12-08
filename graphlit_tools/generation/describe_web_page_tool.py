@@ -65,7 +65,7 @@ class DescribeWebPageTool(BaseTool):
             raise ToolException(str(e)) from e
 
         if content_id is None:
-            return None
+            raise ToolException('Invalid content identifier.')
 
         content = None
 
@@ -75,7 +75,7 @@ class DescribeWebPageTool(BaseTool):
             )
 
             if response.content is None:
-                return None
+                raise ToolException(f'Failed to get content [{content_id}].')
 
             logger.debug(f'ScreenshotIngestTool: Retrieved content by ID [{content_id}].')
 
@@ -85,7 +85,7 @@ class DescribeWebPageTool(BaseTool):
             raise ToolException(str(e)) from e
 
         if content.image_uri is None:
-            return None
+            raise ToolException(f'Invalid image URI for content [{content_id}].')
 
         # NOTE: if we've already analyzed the image, via workflow, return the image description
         if content.image.description is not None:
@@ -116,8 +116,7 @@ class DescribeWebPageTool(BaseTool):
             )
 
             if response.describe_image is None or response.describe_image.message is None:
-                logger.debug('Failed to describe screenshot.')
-                return None
+                raise ToolException('Failed to describe screenshot.')
 
             return response.describe_image.message
         except exceptions.GraphQLClientError as e:
