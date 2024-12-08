@@ -79,7 +79,7 @@ class ExtractWebPageTool(BaseTool):
             )
 
             if response.content is None:
-                raise ToolException('Failed to get content [{content_id}].')
+                raise ToolException(f'Failed to get content [{content_id}].')
 
             logger.debug(f'ExtractWebPageTool: Retrieved content by ID [{content_id}].')
 
@@ -91,8 +91,8 @@ class ExtractWebPageTool(BaseTool):
             raise ToolException(str(e)) from e
 
         if text is None:
-            raise ToolException('Found no text to be extracted from content [{content_id}].')
-        
+            raise ToolException(f'Found no text to be extracted from content [{content_id}].')
+
         default_name = "extract_pydantic_model"
 
         default_prompt = """

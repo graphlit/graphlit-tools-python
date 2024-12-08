@@ -14,12 +14,13 @@ logger = logging.getLogger(__name__)
 
 class ExtractURLInput(BaseModel):
     url: str = Field(description="URL of cloud-hosted file to be ingested into knowledge base")
-    model: BaseModel = Field(description="Pydantic model which describes the data which will be extracted")
+    model_schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.")
     prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 
 class ExtractURLTool(BaseTool):
     name: str = "Graphlit JSON URL data extraction tool"
     description: str = """Extracts JSON data from ingested file using LLM.
+    Accepts URL to be ingested, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
     Returns extracted JSON from file."""
     args_schema: Type[BaseModel] = ExtractURLInput
 
@@ -51,7 +52,7 @@ class ExtractURLTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, url: str, model: BaseModel, prompt: Optional[str] = None) -> Optional[str]:
+    async def _arun(self, url: str, model_schema: str, prompt: Optional[str] = None) -> Optional[str]:
         content_id = None
 
         try:
@@ -68,7 +69,7 @@ class ExtractURLTool(BaseTool):
             raise ToolException(str(e)) from e
 
         if content_id is None:
-            return None
+            raise ToolException('Invalid content identifier.')
 
         text = None
 
@@ -78,7 +79,7 @@ class ExtractURLTool(BaseTool):
             )
 
             if response.content is None:
-                return None
+                raise ToolException(f'Failed to get content [{content_id}].')
 
             logger.debug(f'ExtractURLTool: Retrieved content by ID [{content_id}].')
 
@@ -89,6 +90,11 @@ class ExtractURLTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
+        if text is None:
+            raise ToolException(f'Found no text to be extracted from content [{content_id}].')
+
+        default_name = "extract_pydantic_model"
+
         default_prompt = """
         Extract data using the tools provided.
         """
@@ -96,7 +102,7 @@ class ExtractURLTool(BaseTool):
         try:
             response = await self.graphlit.client.extract_text(
                 specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
-                tools=[input_types.ToolDefinitionInput(name=model.__name__, schema=model.model_dump_json())],
+                tools=[input_types.ToolDefinitionInput(name=default_name, schema=model_schema)],
                 prompt=default_prompt if prompt is None else prompt,
                 text=text,
                 text_type=enums.TextTypes.MARKDOWN,
@@ -104,8 +110,7 @@ class ExtractURLTool(BaseTool):
             )
 
             if response.extract_text is None:
-                logger.debug('Failed to extract text.')
-                return None
+                raise ToolException('Failed to extract text.')
 
             extractions = response.extract_text
 
@@ -121,5 +126,5 @@ class ExtractURLTool(BaseTool):
             print(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, url: str, model: BaseModel, prompt: Optional[str] = None) -> Optional[str]:
-        return helpers.run_async(self._arun, url, model, prompt)
+    def _run(self, url: str, model_schema: str, prompt: Optional[str] = None) -> Optional[str]:
+        return helpers.run_async(self._arun, url, model_schema, prompt)

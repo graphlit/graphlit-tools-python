@@ -14,12 +14,13 @@ logger = logging.getLogger(__name__)
 
 class ExtractTextInput(BaseModel):
     text: str = Field(description="Text to be extracted with LLM.")
-    model: BaseModel = Field(description="Pydantic model which describes the data which will be extracted")
+    model_schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.")
     prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 
 class ExtractTextTool(BaseTool):
     name: str = "Graphlit JSON text data extraction tool"
     description: str = """Extracts JSON data from text using LLM.
+    Accepts text to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
     Returns extracted JSON from text."""
     args_schema: Type[BaseModel] = ExtractTextInput
 
@@ -48,7 +49,9 @@ class ExtractTextTool(BaseTool):
         self.specification_id = specification_id
         self.correlation_id = correlation_id
 
-    async def _arun(self, text: str, model: BaseModel, prompt: Optional[str] = None) -> Optional[str]:
+    async def _arun(self, text: str, model_schema: str, prompt: Optional[str] = None) -> Optional[str]:
+        default_name = "extract_pydantic_model"
+
         default_prompt = """
         Extract data using the tools provided.
         """
@@ -56,15 +59,14 @@ class ExtractTextTool(BaseTool):
         try:
             response = await self.graphlit.client.extract_text(
                 specification=input_types.EntityReferenceInput(id=self.specification_id) if self.specification_id is not None else None,
-                tools=[input_types.ToolDefinitionInput(name=model.__name__, schema=model.model_dump_json())],
+                tools=[input_types.ToolDefinitionInput(name=default_name, schema=model_schema)],
                 prompt=default_prompt if prompt is None else prompt,
                 text=text,
                 correlation_id=self.correlation_id
             )
 
             if response.extract_text is None:
-                logger.debug('Failed to extract text.')
-                return None
+                raise ToolException('Failed to extract text.')
 
             extractions = response.extract_text
 
@@ -80,5 +82,5 @@ class ExtractTextTool(BaseTool):
             print(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, text: str, model: BaseModel, prompt: Optional[str] = None) -> Optional[str]:
-        return helpers.run_async(self._arun, text, model, prompt)
+    def _run(self, text: str, model_schema: str, prompt: Optional[str] = None) -> Optional[str]:
+        return helpers.run_async(self._arun, text, model_schema, prompt)
