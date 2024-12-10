@@ -66,3 +66,4 @@ Please refer to the [Graphlit API Documentation](https://docs.graphlit.dev/).
 For support with the Graphlit Agent Tools, please submit a [GitHub Issue](https://github.com/graphlit/graphlit-tools-python/issues).  
 
 For further support with the Graphlit Platform, please join our [Discord](https://discord.gg/ygFmfjy3Qx) community.
+
