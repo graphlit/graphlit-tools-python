@@ -31,6 +31,15 @@ For use in CrewAI, you will need to convert the tool to the CrewAI tool schema w
 from graphlit_tools import WebSearchTool, CrewAIConverter
 
 web_search_tool = CrewAIConverter.from_tool(WebSearchTool(graphlit))
+
+web_search_agent = Agent(
+    role="Web Researcher",
+    goal="Find the {company} website.",
+    backstory="",
+    verbose=True,
+    allow_delegation=False,
+    tools=[web_search_tool],
+)
 ```
 
 ## Configuration
