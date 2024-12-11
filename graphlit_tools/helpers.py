@@ -144,15 +144,13 @@ def format_content(content, include_text: Optional[bool] = True) -> List[str]:
                 results.append(segment.text)
                 results.append("\n---\n")
 
-        # TODO: need to expose in SDK
-#        if content.frames:
-#            for frame in content.frames:
-#                results.append(f"**Frame #{frame.index + 1}:**")
-#                results.append(frame.text)
-#                results.append("\n---\n")
+        if content.frames:
+            for frame in content.frames:
+                results.append(f"**Frame #{frame.index + 1}:**")
+                results.append(frame.text)
+                results.append("\n---\n")
 
-#        if not content.pages and not content.segments and not content.frames and content.markdown:
-        if not content.pages and not content.segments and content.markdown:
+        if not content.pages and not content.segments and not content.frames and content.markdown:
             results.append(content.markdown)
             results.append("\n")
     else:
