@@ -31,6 +31,15 @@ For use in CrewAI, you will need to convert the tool to the CrewAI tool schema w
 from graphlit_tools import WebSearchTool, CrewAIConverter
 
 web_search_tool = CrewAIConverter.from_tool(WebSearchTool(graphlit))
+
+web_search_agent = Agent(
+    role="Web Researcher",
+    goal="Find the {company} website.",
+    backstory="",
+    verbose=True,
+    allow_delegation=False,
+    tools=[web_search_tool],
+)
 ```
 
 ## Configuration
@@ -88,6 +97,12 @@ $env:GRAPHLIT_JWT_SECRET="your_secret_key_value"
 ```
 
 ## Tools
+
+- [Content Ingestion](#content-ingestion)
+- [RAG](#rag)
+- [Data Retrieval](#data-retrieval)
+- [Image Description](#image-description)
+- [Data Extraction](#data-extraction)
 
 ### Content Ingestion
 
@@ -315,36 +330,214 @@ Requires SLACK_BOT_TOKEN to be assigned as environment variable.
 | search | Optional[str] | Text to search for within ingested messages |
 | read_limit | Optional[int] | Maximum number of messages from Slack channel to be read, defaults to 10 |
 
-### Content Generation
+### RAG
 
-PromptTool
-DescribeImageTool
-DescribeWebPageTool
-GenerateSummaryTool
-GenerateBulletsTool
-GenerateHeadlinesTool
-GenerateSocialMediaPostsTool
-GenerateQuestionsTool
-GenerateKeywordsTool
-GenerateChaptersTool
+#### PromptTool: Graphlit RAG prompt tool
+##### Description
+Accepts user prompt as string.
+Prompts LLM with relevant content and returns completion from RAG pipeline. Returns Markdown text from LLM completion.
+Uses vector embeddings and similarity search to retrieve relevant content from knowledge base.
+Can search through web pages, PDFs, audio transcripts, and other unstructured data.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| prompt | str | Text prompt which is provided to LLM for completion, via RAG pipeline |
 
 ### Data Retrieval
 
-PersonRetrievalTool
-OrganizationRetrievalTool
-ContentRetrievalTool
+#### ContentRetrievalTool: Graphlit content retrieval tool
+##### Description
+Accepts search text as string.
+Optionally accepts a list of content types (i.e. FILE, PAGE, EMAIL, ISSUE, MESSAGE) for filtering the result set.
+Retrieves contents based on similarity search from knowledge base.
+Returns extracted Markdown text and metadata from contents relevant to the search text.
+Can search through web pages, PDFs, audio transcripts, Slack messages, emails, or any unstructured data ingested into the knowledge base.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to search for within the knowledge base |
+| types | Optional[List[ContentTypes]] | List of content types (i.e. FILE, PAGE, EMAIL, ISSUE, MESSAGE) to be returned from knowledge base |
+| limit | Optional[int] | Number of contents to return from search query |
+
+#### PersonRetrievalTool: Graphlit person retrieval tool
+##### Description
+Accepts search text as string.
+Retrieves persons based on similarity search from knowledge base.
+Returns metadata from persons relevant to the search text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| search | str | Text to search for within the knowledge base |
+| limit | Optional[int] | Number of persons to return from search query |
+
+#### OrganizationRetrievalTool: Graphlit organization retrieval tool
+##### Description
+Accepts search text as string.
+Retrieves organizations based on similarity search from knowledge base.
+Returns metadata from organizations relevant to the search text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| search | str | Text to search for within the knowledge base |
+| limit | Optional[int] | Number of organizations to return from search query |
+
+### Image Description
+
+#### DescribeImageTool: Graphlit image description tool
+##### Description
+Accepts image URL as string.
+Prompts vision LLM and returns completion. Returns Markdown text from LLM completion.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| url | str | URL for image to be described with vision LLM |
+| prompt | str | Text prompt which is provided to vision LLM for completion |
+
+#### DescribeWebPageTool: Graphlit screenshot web page tool
+##### Description
+Accepts image URL as string.
+Prompts vision LLM and returns completion. Returns Markdown text from LLM completion.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| url | str | URL of web page to screenshot and ingest into knowledge base |
+| prompt | Optional[str] | Text prompt which is provided to vision LLM for screenshot description |
+
+### Content Generation
+
+#### GenerateSummaryTool: Graphlit summary generation tool
+##### Description
+Accepts text as string.
+Optionally accepts text prompt to be provided to LLM for text summarization.
+Returns summary as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized |
+| prompt | Optional[str] | Text prompt which is provided to LLM for text summarization |
+
+#### GenerateBulletsTool: Graphlit bullet points generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of bullet points to be generated.
+Returns bullet points as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into bullet points |
+| count | Optional[int] | Number of bullet points to be generated |
+
+#### GenerateHeadlinesTool: Graphlit headlines generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of headlines to be generated.
+Returns headlines as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into headlines |
+| count | Optional[int] | Number of headlines to be generated |
+
+#### GenerateSocialMediaPostsTool: : Graphlit social media posts generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of social media posts to be generated.
+Returns social media posts as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into social media posts |
+| count | Optional[int] | Number of social media posts to be generated |
+
+#### GenerateQuestionsTool: Graphlit followup questions generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of followup questions to be generated.
+Returns followup questions as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into followup questions |
+| count | Optional[int] | Number of followup questions to be generated |
+
+#### GenerateKeywordsTool: Graphlit keywords generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of keywords to be generated.
+Returns keywords as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into keywords |
+| count | Optional[int] | Number of keywords to be generated |
+
+#### GenerateChaptersTool: Graphlit transcript chapters generation tool
+##### Description
+Accepts transcript as string.
+Returns chapters as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Transcript to be summarized into chapters. Assumes transcript contains time-stamped text. |
 
 ### Data Extraction
 
-ExtractURLTool
-ExtractWebPageTool
-ExtractTextTool
+#### ExtractURLTool: Graphlit JSON URL data extraction tool
+##### Description
+Extracts JSON data from ingested file using LLM.
+Accepts URL to be ingested, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
+Returns extracted JSON from file.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| uri | str | URL of cloud-hosted file to be ingested into knowledge base |
+| model_schema | str | Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields. |
+| prompt | Optional[str] | Text prompt which is provided to LLM to guide data extraction |
+
+#### ExtractWebPageTool: Graphlit JSON web page data extraction tool
+##### Description
+Extracts JSON data from ingested web page using LLM.
+Accepts URL to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
+Returns extracted JSON from web page.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| uri | str | URL of web page to be scraped and ingested into knowledge base |
+| model_schema | str | Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields. |
+| prompt | Optional[str] | Text prompt which is provided to LLM to guide data extraction |
+
+#### ExtractTextTool: Graphlit JSON text data extraction tool
+##### Description
+Extracts JSON data from text using LLM.
+Accepts text to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
+Returns extracted JSON from text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be extracted with LLM |
+| model_schema | str | Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields. |
+| prompt | Optional[str] | Text prompt which is provided to LLM to guide data extraction |
 
 ## Support
 
 Please refer to the [Graphlit API Documentation](https://docs.graphlit.dev/).
 
-For support with the Graphlit Agent Tools, please submit a [GitHub Issue](https://github.com/graphlit/graphlit-tools-python/issues).  
+For support with the Graphlit Agent Tools or to request an additional tool, please submit a [GitHub Issue](https://github.com/graphlit/graphlit-tools-python/issues).  
 
 For further support with the Graphlit Platform, please join our [Discord](https://discord.gg/ygFmfjy3Qx) community.
-
