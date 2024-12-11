@@ -337,9 +337,44 @@ Can search through web pages, PDFs, audio transcripts, and other unstructured da
 
 ### Data Retrieval
 
-ContentRetrievalTool
-PersonRetrievalTool
-OrganizationRetrievalTool
+#### ContentRetrievalTool: Graphlit content retrieval tool
+##### Description
+Accepts search text as string.
+Optionally accepts a list of content types (i.e. FILE, PAGE, EMAIL, ISSUE, MESSAGE) for filtering the result set.
+Retrieves contents based on similarity search from knowledge base.
+Returns extracted Markdown text and metadata from contents relevant to the search text.
+Can search through web pages, PDFs, audio transcripts, Slack messages, emails, or any unstructured data ingested into the knowledge base.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to search for within the knowledge base |
+| types | Optional[List[ContentTypes]] | List of content types (i.e. FILE, PAGE, EMAIL, ISSUE, MESSAGE) to be returned from knowledge base |
+| limit | Optional[int] | Number of contents to return from search query |
+
+#### PersonRetrievalTool: Graphlit person retrieval tool
+##### Description
+Accepts search text as string.
+Retrieves persons based on similarity search from knowledge base.
+Returns metadata from persons relevant to the search text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| search | str | Text to search for within the knowledge base |
+| limit | Optional[int] | Number of persons to return from search query |
+
+#### OrganizationRetrievalTool: Graphlit organization retrieval tool
+##### Description
+Accepts search text as string.
+Retrieves organizations based on similarity search from knowledge base.
+Returns metadata from organizations relevant to the search text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| search | str | Text to search for within the knowledge base |
+| limit | Optional[int] | Number of organizations to return from search query |
 
 ### Image Description
 
@@ -494,6 +529,6 @@ Returns extracted JSON from text.
 
 Please refer to the [Graphlit API Documentation](https://docs.graphlit.dev/).
 
-For support with the Graphlit Agent Tools, please submit a [GitHub Issue](https://github.com/graphlit/graphlit-tools-python/issues).  
+For support with the Graphlit Agent Tools or to request an additional tool, please submit a [GitHub Issue](https://github.com/graphlit/graphlit-tools-python/issues).  
 
 For further support with the Graphlit Platform, please join our [Discord](https://discord.gg/ygFmfjy3Qx) community.
