@@ -34,7 +34,7 @@ class ContentRetrievalTool(BaseTool):
 
     def __init__(self, graphlit: Optional[Graphlit] = None, search_type: Optional[enums.SearchTypes] = None, **kwargs):
         """
-        Initializes the RetrievalTool.
+        Initializes the ContentRetrievalTool.
 
         Args:
             graphlit (Optional[Graphlit]): An optional Graphlit instance to interact with the Graphlit API.
