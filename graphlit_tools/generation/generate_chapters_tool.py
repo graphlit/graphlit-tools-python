@@ -15,7 +15,7 @@ class GenerateChaptersInput(BaseModel):
     text: str = Field(description="Transcript to be summarized into chapters. Assumes transcript contains time-stamped text.")
 
 class GenerateChaptersTool(BaseTool):
-    name: str = "Graphlit chapters generation tool"
+    name: str = "Graphlit transcript chapters generation tool"
     description: str = """Accepts transcript as string.
     Returns chapters as text."""
     args_schema: Type[BaseModel] = GenerateChaptersInput

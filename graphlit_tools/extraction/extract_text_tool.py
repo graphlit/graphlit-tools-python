@@ -13,7 +13,7 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class ExtractTextInput(BaseModel):
-    text: str = Field(description="Text to be extracted with LLM.")
+    text: str = Field(description="Text to be extracted with LLM")
     model_schema: str = Field(description="Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.")
     prompt: Optional[str] = Field(description="Text prompt which is provided to LLM to guide data extraction, optional.", default=None)
 

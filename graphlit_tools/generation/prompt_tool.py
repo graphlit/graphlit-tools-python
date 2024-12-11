@@ -26,7 +26,7 @@ def callback(tool_name, **kwargs):
 """
 
 class PromptInput(BaseModel):
-    prompt: str = Field(description="Text prompt which is provided to LLM for completion, via RAG pipeline.")
+    prompt: str = Field(description="Text prompt which is provided to LLM for completion, via RAG pipeline")
 
 class PromptToolInput(BaseModel):
     name: str = Field(description="Tool name.")

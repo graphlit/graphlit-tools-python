@@ -12,8 +12,8 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class DescribeImageInput(BaseModel):
-    prompt: str = Field(description="Text prompt which is provided to vision LLM for completion.")
-    url: str = Field(description="URL for image to be described with vision LLM.")
+    url: str = Field(description="URL for image to be described with vision LLM")
+    prompt: str = Field(description="Text prompt which is provided to vision LLM for completion")
 
 class DescribeImageTool(BaseTool):
     name: str = "Graphlit image description tool"

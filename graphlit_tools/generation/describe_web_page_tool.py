@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class DescribeWebPageInput(BaseModel):
     url: str = Field(description="URL of web page to screenshot and ingest into knowledge base")
-    prompt: Optional[str] = Field(description="Text prompt which is provided to vision LLM for screenshot description, optional.", default=None)
+    prompt: Optional[str] = Field(description="Text prompt which is provided to vision LLM for screenshot description, optional", default=None)
 
 class DescribeWebPageTool(BaseTool):
     name: str = "Graphlit screenshot web page tool"
@@ -77,7 +77,7 @@ class DescribeWebPageTool(BaseTool):
             if response.content is None:
                 raise ToolException(f'Failed to get content [{content_id}].')
 
-            logger.debug(f'ScreenshotIngestTool: Retrieved content by ID [{content_id}].')
+            logger.debug(f'DescribeWebPageTool: Retrieved content by ID [{content_id}].')
 
             content = response.content
         except exceptions.GraphQLClientError as e:

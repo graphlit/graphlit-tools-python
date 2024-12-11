@@ -12,7 +12,7 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class GenerateBulletsInput(BaseModel):
-    text: str = Field(description="Text to be summarized into bullet points.")
+    text: str = Field(description="Text to be summarized into bullet points")
     count: Optional[int] = Field(description="Number of bullet points to be generated, optional.", default=10)
 
 class GenerateBulletsTool(BaseTool):

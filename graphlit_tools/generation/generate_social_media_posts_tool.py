@@ -12,8 +12,8 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class GenerateSocialMediaPostsInput(BaseModel):
-    text: str = Field(description="Text to be summarized into social media posts.")
-    count: Optional[int] = Field(description="Number of social media posts to be generated, optional.", default=10)
+    text: str = Field(description="Text to be summarized into social media posts")
+    count: Optional[int] = Field(description="Number of social media posts to be generated, optional", default=10)
 
 class GenerateSocialMediaPostsTool(BaseTool):
     name: str = "Graphlit social media posts generation tool"
