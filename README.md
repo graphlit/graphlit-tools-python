@@ -315,18 +315,53 @@ Requires SLACK_BOT_TOKEN to be assigned as environment variable.
 | search | Optional[str] | Text to search for within ingested messages |
 | read_limit | Optional[int] | Maximum number of messages from Slack channel to be read, defaults to 10 |
 
+### RAG Pipeline
+
+#### PromptTool: Graphlit RAG prompt tool
+##### Description
+Accepts user prompt as string.
+Prompts LLM with relevant content and returns completion from RAG pipeline. Returns Markdown text from LLM completion.
+Uses vector embeddings and similarity search to retrieve relevant content from knowledge base.
+Can search through web pages, PDFs, audio transcripts, and other unstructured data.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| prompt | str | Text prompt which is provided to LLM for completion, via RAG pipeline |
+
+### Image Description
+
+#### DescribeImageTool: Graphlit image description tool
+##### Description
+Accepts image URL as string.
+Prompts vision LLM and returns completion. Returns Markdown text from LLM completion.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| url | str | URL for image to be described with vision LLM |
+| prompt | str | Text prompt which is provided to vision LLM for completion |
+
+#### DescribeWebPageTool: Graphlit screenshot web page tool
+##### Description
+Accepts image URL as string.
+Prompts vision LLM and returns completion. Returns Markdown text from LLM completion.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| url | str | URL of web page to screenshot and ingest into knowledge base |
+| prompt | Optional[str] | Text prompt which is provided to vision LLM for screenshot description |
+
 ### Content Generation
 
-PromptTool
-DescribeImageTool
-DescribeWebPageTool
-GenerateSummaryTool
-GenerateBulletsTool
-GenerateHeadlinesTool
-GenerateSocialMediaPostsTool
-GenerateQuestionsTool
-GenerateKeywordsTool
-GenerateChaptersTool
+#### GenerateSummaryTool
+#### GenerateBulletsTool
+#### GenerateHeadlinesTool
+#### GenerateSocialMediaPostsTool
+#### GenerateQuestionsTool
+#### GenerateKeywordsTool
+#### GenerateChaptersTool
 
 ### Data Retrieval
 
