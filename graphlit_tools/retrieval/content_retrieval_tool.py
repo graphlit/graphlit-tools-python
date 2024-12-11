@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class ContentRetrievalInput(BaseModel):
     search: str = Field(description="Text to search for within the knowledge base")
-    types: Optional[List[enums.ContentTypes]] = Field(description="List of content types to be returned from knowledge base, optional.", default=None)
+    types: Optional[List[enums.ContentTypes]] = Field(description="List of content types (i.e. FILE, PAGE, EMAIL, ISSUE, MESSAGE) to be returned from knowledge base, optional.", default=None)
     limit: Optional[int] = Field(description="Number of contents to return from search query, optional.", default=None)
 
 class ContentRetrievalTool(BaseTool):
@@ -47,7 +47,7 @@ class ContentRetrievalTool(BaseTool):
         self.graphlit = graphlit or Graphlit()
         self.search_type = search_type
 
-    async def _arun(self, search: str = None, types: Optional[List[enums.ContentTypes]] = None, limit: Optional[int] = None) -> Optional[str]:
+    async def _arun(self, search: str, types: Optional[List[enums.ContentTypes]] = None, limit: Optional[int] = None) -> Optional[str]:
         try:
             response = await self.graphlit.client.query_contents(
                 filter=input_types.ContentFilter(
@@ -59,7 +59,7 @@ class ContentRetrievalTool(BaseTool):
             )
 
             if response.contents is None or response.contents.results is None:
-                return None
+                raise ToolException('Failed to retrieve contents.')
 
             logger.debug(f'ContentRetrievalTool: Retrieved [{len(response.contents.results)}] content(s) given search text [{search}].')
 
@@ -75,5 +75,5 @@ class ContentRetrievalTool(BaseTool):
             logger.error(str(e))
             raise ToolException(str(e)) from e
 
-    def _run(self, search: str = None, types: Optional[List[enums.ContentTypes]] = None, limit: Optional[int] = None) -> Optional[str]:
+    def _run(self, search: str, types: Optional[List[enums.ContentTypes]] = None, limit: Optional[int] = None) -> Optional[str]:
         return helpers.run_async(self._arun, search, types, limit)
