@@ -89,6 +89,12 @@ $env:GRAPHLIT_JWT_SECRET="your_secret_key_value"
 
 ## Tools
 
+- [Content Ingestion](#content-ingestion)
+- [RAG](#rag)
+- [Data Retrieval](#data-retrieval)
+- [Image Description](#image-description)
+- [Data Extraction](#data-extraction)
+
 ### Content Ingestion
 
 #### URLIngestTool: Graphlit URL ingest tool
@@ -315,7 +321,7 @@ Requires SLACK_BOT_TOKEN to be assigned as environment variable.
 | search | Optional[str] | Text to search for within ingested messages |
 | read_limit | Optional[int] | Maximum number of messages from Slack channel to be read, defaults to 10 |
 
-### RAG Pipeline
+### RAG
 
 #### PromptTool: Graphlit RAG prompt tool
 ##### Description
@@ -328,6 +334,12 @@ Can search through web pages, PDFs, audio transcripts, and other unstructured da
 | Name | Type | Description |
 | ---- | ---- | ---- |
 | prompt | str | Text prompt which is provided to LLM for completion, via RAG pipeline |
+
+### Data Retrieval
+
+ContentRetrievalTool
+PersonRetrievalTool
+OrganizationRetrievalTool
 
 ### Image Description
 
@@ -437,17 +449,46 @@ Returns chapters as text.
 | ---- | ---- | ---- |
 | text | str | Transcript to be summarized into chapters. Assumes transcript contains time-stamped text. |
 
-### Data Retrieval
-
-PersonRetrievalTool
-OrganizationRetrievalTool
-ContentRetrievalTool
-
 ### Data Extraction
 
-ExtractURLTool
-ExtractWebPageTool
-ExtractTextTool
+#### ExtractURLTool: Graphlit JSON URL data extraction tool
+##### Description
+Extracts JSON data from ingested file using LLM.
+Accepts URL to be ingested, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
+Returns extracted JSON from file.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| uri | str | URL of cloud-hosted file to be ingested into knowledge base |
+| model_schema | str | Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields. |
+| prompt | Optional[str] | Text prompt which is provided to LLM to guide data extraction |
+
+#### ExtractWebPageTool: Graphlit JSON web page data extraction tool
+##### Description
+Extracts JSON data from ingested web page using LLM.
+Accepts URL to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
+Returns extracted JSON from web page.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| uri | str | URL of web page to be scraped and ingested into knowledge base |
+| model_schema | str | Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields. |
+| prompt | Optional[str] | Text prompt which is provided to LLM to guide data extraction |
+
+#### ExtractTextTool: Graphlit JSON text data extraction tool
+##### Description
+Extracts JSON data from text using LLM.
+Accepts text to be scraped, and JSON schema of Pydantic model to be extracted into. JSON schema needs be of type 'object' and include 'properties' and 'required' fields.
+Returns extracted JSON from text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be extracted with LLM |
+| model_schema | str | Pydantic model JSON schema which describes the data which will be extracted. JSON schema needs be of type 'object' and include 'properties' and 'required' fields. |
+| prompt | Optional[str] | Text prompt which is provided to LLM to guide data extraction |
 
 ## Support
 
@@ -456,4 +497,3 @@ Please refer to the [Graphlit API Documentation](https://docs.graphlit.dev/).
 For support with the Graphlit Agent Tools, please submit a [GitHub Issue](https://github.com/graphlit/graphlit-tools-python/issues).  
 
 For further support with the Graphlit Platform, please join our [Discord](https://discord.gg/ygFmfjy3Qx) community.
-
