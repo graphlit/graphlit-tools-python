@@ -1,8 +1,8 @@
-# Agent Tools for Graphlit Platform
+# Python Agent Tools for Graphlit Platform
 
 ## Overview
 
-Work in progress.
+The Graphlit Agent Tools for Python enables easy interaction with agent frameworks such as [CrewAI](https://crewai.com), allowing developers to easily integrate the Graphlit service with agentic workflows. This document outlines the setup process and provides a basic example of using the tools.
 
 ## Prerequisites
 
@@ -19,6 +19,20 @@ To install the Graphlit Agent Tools with CrewAI, use pip:
 pip install graphlit-tools[crewai]
 ```
 
+### Using the Graphlit agent tools
+
+We have example Google Colab notebooks using CrewAI, which provide an example for [analyzing the web marketing strategy of a company](https://colab.research.google.com/github/graphlit/graphlit-samples/blob/main/python/Notebook%20Examples/Graphlit_2024_12_07_CrewAI_Web_Marketing_Analyzer.ipynb), and for [structured data extraction of products from scraped web pages](https://colab.research.google.com/github/graphlit/graphlit-samples/blob/main/python/Notebook%20Examples/Graphlit_2024_12_08_CrewAI_Product_Data_Extraction.ipynb).
+
+Once you have configured the Graphlit client, as shown below, you will pass the client to the tool constructor.
+
+For use in CrewAI, you will need to convert the tool to the CrewAI tool schema with the `CrewAIConverter.from_tool()` function.  We will provide support for additional agent frameworks, such as LangGraph and AutoGen in future.
+
+```python
+from graphlit_tools import WebSearchTool, CrewAIConverter
+
+web_search_tool = CrewAIConverter.from_tool(WebSearchTool(graphlit))
+```
+
 ## Configuration
 
 The Graphlit Client supports environment variables to be set for authentication and configuration:
@@ -30,6 +44,20 @@ The Graphlit Client supports environment variables to be set for authentication 
 Alternately, you can pass these values with the constructor of the Graphlit client.
 
 You can find these values in the API settings dashboard on the [Graphlit Platform](https://portal.graphlit.dev).
+
+For example, to use Graphlit in a Google Colab notebook, you need to assign these properties as Colab secrets: GRAPHLIT_ORGANIZATION_ID, GRAPHLIT_ENVIRONMENT_ID and GRAPHLIT_JWT_SECRET.
+
+```python
+import os
+from google.colab import userdata
+from graphlit import Graphlit
+
+os.environ['GRAPHLIT_ORGANIZATION_ID'] = userdata.get('GRAPHLIT_ORGANIZATION_ID')
+os.environ['GRAPHLIT_ENVIRONMENT_ID'] = userdata.get('GRAPHLIT_ENVIRONMENT_ID')
+os.environ['GRAPHLIT_JWT_SECRET'] = userdata.get('GRAPHLIT_JWT_SECRET')
+
+graphlit = Graphlit()
+```
 
 ### Setting Environment Variables
 
