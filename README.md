@@ -355,13 +355,87 @@ Prompts vision LLM and returns completion. Returns Markdown text from LLM comple
 
 ### Content Generation
 
-#### GenerateSummaryTool
-#### GenerateBulletsTool
-#### GenerateHeadlinesTool
-#### GenerateSocialMediaPostsTool
-#### GenerateQuestionsTool
-#### GenerateKeywordsTool
-#### GenerateChaptersTool
+#### GenerateSummaryTool: Graphlit summary generation tool
+##### Description
+Accepts text as string.
+Optionally accepts text prompt to be provided to LLM for text summarization.
+Returns summary as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized |
+| prompt | Optional[str] | Text prompt which is provided to LLM for text summarization |
+
+#### GenerateBulletsTool: Graphlit bullet points generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of bullet points to be generated.
+Returns bullet points as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into bullet points |
+| count | Optional[int] | Number of bullet points to be generated |
+
+#### GenerateHeadlinesTool: Graphlit headlines generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of headlines to be generated.
+Returns headlines as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into headlines |
+| count | Optional[int] | Number of headlines to be generated |
+
+#### GenerateSocialMediaPostsTool: : Graphlit social media posts generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of social media posts to be generated.
+Returns social media posts as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into social media posts |
+| count | Optional[int] | Number of social media posts to be generated |
+
+#### GenerateQuestionsTool: Graphlit followup questions generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of followup questions to be generated.
+Returns followup questions as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into followup questions |
+| count | Optional[int] | Number of followup questions to be generated |
+
+#### GenerateKeywordsTool: Graphlit keywords generation tool
+##### Description
+Accepts text as string.
+Optionally accepts the count of keywords to be generated.
+Returns keywords as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Text to be summarized into keywords |
+| count | Optional[int] | Number of keywords to be generated |
+
+#### GenerateChaptersTool: Graphlit transcript chapters generation tool
+##### Description
+Accepts transcript as string.
+Returns chapters as text.
+
+##### Parameters
+| Name | Type | Description |
+| ---- | ---- | ---- |
+| text | str | Transcript to be summarized into chapters. Assumes transcript contains time-stamped text. |
 
 ### Data Retrieval
 
