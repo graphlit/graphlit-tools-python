@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class RSSIngestInput(BaseModel):
     url: str = Field(description="RSS URL to be read and ingested into knowledge base")
-    search: Optional[str] = Field(description="Text to search for within ingested posts and/or transcripts.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of posts from RSS feed to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested posts and/or transcripts", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of posts from RSS feed to be read", default=10)
 
 class RSSIngestTool(BaseTool):
     name: str = "Graphlit RSS ingest tool"

@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 class DiscordIngestInput(BaseModel):
     channel_name: str = Field(description="Discord channel name")
-    search: Optional[str] = Field(description="Text to search for within ingested messages.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of messages from Discord channel to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested messages", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of messages from Discord channel to be read", default=10)
 
 class DiscordIngestTool(BaseTool):
     name: str = "Graphlit Discord ingest tool"

@@ -18,7 +18,7 @@ class LocalIngestInput(BaseModel):
     file_path: str = Field(description="Path of local file to be ingested into knowledge base")
 
 class LocalIngestTool(BaseTool):
-    name: str = "Ingest Local File"
+    name: str = "Graphlit local file ingest tool"
     description: str = """Ingests content from local file.
     Returns extracted Markdown text and metadata from content.
     Can ingest individual Word documents, PDFs, audio recordings, videos, images, or any other unstructured data."""

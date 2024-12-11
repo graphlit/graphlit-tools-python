@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class WebCrawlInput(BaseModel):
     url: str = Field(description="URL of web site to be crawled and ingested into knowledge base")
-    search: Optional[str] = Field(description="Text to search for within ingested web pages.", default=None)
+    search: Optional[str] = Field(description="Text to search for within ingested web pages", default=None)
     read_limit: Optional[int] = Field(description="Maximum number of web pages from web site to be crawled")
 
 class WebCrawlTool(BaseTool):

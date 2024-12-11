@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 class LinearIssueIngestInput(BaseModel):
     project: str = Field(description="Linear project name")
-    search: Optional[str] = Field(description="Text to search for within ingested issues.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of issues from Linear project to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested issues", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of issues from Linear project to be read", default=10)
 
 class LinearIssueIngestTool(BaseTool):
     name: str = "Graphlit Linear ingest tool"

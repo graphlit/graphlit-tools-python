@@ -14,8 +14,8 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class NotionIngestInput(BaseModel):
-    search: Optional[str] = Field(description="Text to search for within ingested pages.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of pages from Notion database to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested pages", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of pages from Notion database to be read", default=10)
 
 class NotionIngestTool(BaseTool):
     name: str = "Graphlit Notion ingest tool"

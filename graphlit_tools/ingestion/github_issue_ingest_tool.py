@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 class GitHubIssueIngestInput(BaseModel):
     repository_name: str = Field(description="GitHub repository name")
     repository_owner: str = Field(description="GitHub repository owner")
-    search: Optional[str] = Field(description="Text to search for within ingested issues.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of issues from GitHub repository to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested issues", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of issues from GitHub repository to be read", default=10)
 
 class GitHubIssueIngestTool(BaseTool):
     name: str = "Graphlit GitHub Issue ingest tool"

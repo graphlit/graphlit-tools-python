@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 class MicrosoftTeamsIngestInput(BaseModel):
     team_name: str = Field(description="Microsoft Teams team name")
     channel_name: str = Field(description="Microsoft Teams channel name")
-    search: Optional[str] = Field(description="Text to search for within ingested messages.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of messages from Microsoft Teams channel to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested messages", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of messages from Microsoft Teams channel to be read", default=10)
 
 class MicrosoftTeamsIngestTool(BaseTool):
     name: str = "Graphlit Microsoft Teams ingest tool"
@@ -60,6 +60,16 @@ class MicrosoftTeamsIngestTool(BaseTool):
 
         if refresh_token is None:
             raise ToolException('Invalid Microsoft Teams refresh token. Need to assign MICROSOFT_TEAMS_REFRESH_TOKEN environment variable.')
+
+        client_id = os.environ['MICROSOFT_TEAMS_CLIENT_ID']
+
+        if client_id is None:
+            raise ToolException('Invalid Microsoft Teams client identifier. Need to assign MICROSOFT_TEAMS_CLIENT_ID environment variable.')
+
+        client_secret = os.environ['MICROSOFT_TEAMS_CLIENT_SECRET']
+
+        if client_secret is None:
+            raise ToolException('Invalid Microsoft Teams client secret. Need to assign MICROSOFT_TEAMS_CLIENT_SECRET environment variable.')
 
         teams = None
 
@@ -119,6 +129,8 @@ class MicrosoftTeamsIngestTool(BaseTool):
                         type=enums.FeedListingTypes.PAST,
                         teamId=team_id,
                         channelId=channel_id,
+                        clientId=client_id,
+                        clientSecret=client_secret,
                         refreshToken=refresh_token,
                         readLimit=read_limit if read_limit is not None else 10
                     ),

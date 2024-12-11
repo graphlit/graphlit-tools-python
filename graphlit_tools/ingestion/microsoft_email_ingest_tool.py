@@ -14,8 +14,8 @@ from .. import helpers
 logger = logging.getLogger(__name__)
 
 class MicrosoftEmailIngestInput(BaseModel):
-    search: Optional[str] = Field(description="Text to search for within ingested email.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of emails from Microsoft Email account to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested email", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of emails from Microsoft Email account to be read", default=10)
 
 class MicrosoftEmailIngestTool(BaseTool):
     name: str = "Graphlit Microsoft Email ingest tool"
@@ -56,6 +56,16 @@ class MicrosoftEmailIngestTool(BaseTool):
         if refresh_token is None:
             raise ToolException('Invalid Microsoft Email refresh token. Need to assign MICROSOFT_EMAIL_REFRESH_TOKEN environment variable.')
 
+        client_id = os.environ['MICROSOFT_EMAIL_CLIENT_ID']
+
+        if client_id is None:
+            raise ToolException('Invalid Microsoft Email client identifier. Need to assign MICROSOFT_EMAIL_CLIENT_ID environment variable.')
+
+        client_secret = os.environ['MICROSOFT_EMAIL_CLIENT_SECRET']
+
+        if client_secret is None:
+            raise ToolException('Invalid Microsoft Email client secret. Need to assign MICROSOFT_EMAIL_CLIENT_SECRET environment variable.')
+
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
@@ -65,7 +75,9 @@ class MicrosoftEmailIngestTool(BaseTool):
                         type=enums.FeedServiceTypes.MICROSOFT_EMAIL,
                         microsoft=input_types.MicrosoftEmailFeedPropertiesInput(
                             type=enums.EmailListingTypes.PAST,
-                            refreshToken=refresh_token
+                            refreshToken=refresh_token,
+                            clientId=client_id,
+                            clientSecret=client_secret,
                         ),
                         readLimit=read_limit if read_limit is not None else 10
                     ),

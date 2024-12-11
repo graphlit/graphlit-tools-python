@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class WebSearchInput(BaseModel):
     search: str = Field(description="Text to search for within web pages across the Internet")
-    search_limit: Optional[int] = Field(description="Maximum number of web pages to be returned from web search.", default=10)
+    search_limit: Optional[int] = Field(description="Maximum number of web pages to be returned from web search", default=10)
 
 class WebSearchTool(BaseTool):
     name: str = "Graphlit web search tool"

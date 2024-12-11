@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 class JiraIssueIngestInput(BaseModel):
     url: str = Field(description="Atlassian Jira server URL")
     project: str = Field(description="Atlassian Jira project name")
-    search: Optional[str] = Field(description="Text to search for within ingested issues.", default=None)
-    read_limit: Optional[int] = Field(description="Maximum number of issues from Jira to be read.", default=10)
+    search: Optional[str] = Field(description="Text to search for within ingested issues", default=None)
+    read_limit: Optional[int] = Field(description="Maximum number of issues from Jira project to be read", default=10)
 
 class JiraIssueIngestTool(BaseTool):
     name: str = "Graphlit Jira ingest tool"
