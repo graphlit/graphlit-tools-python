@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/graphlit-tools.svg)](https://badge.fury.io/py/graphlit-tools)
+
 # Python Agent Tools for Graphlit Platform
 
 ## Overview
@@ -101,6 +103,7 @@ $env:GRAPHLIT_JWT_SECRET="your_secret_key_value"
 - [Content Ingestion](#content-ingestion)
 - [RAG](#rag)
 - [Data Retrieval](#data-retrieval)
+- [Content Generation](#content-generation)
 - [Image Description](#image-description)
 - [Data Extraction](#data-extraction)
 
@@ -400,8 +403,8 @@ Prompts vision LLM and returns completion. Returns Markdown text from LLM comple
 
 #### DescribeWebPageTool: Graphlit screenshot web page tool
 ##### Description
-Accepts image URL as string.
-Prompts vision LLM and returns completion. Returns Markdown text from LLM completion.
+Screenshots web page from URL and describes web page with vision LLM.
+Returns Markdown description of screenshot and extracted Markdown text from image.
 
 ##### Parameters
 | Name | Type | Description |
