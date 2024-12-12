@@ -401,8 +401,8 @@ Prompts vision LLM and returns completion. Returns Markdown text from LLM comple
 
 #### DescribeWebPageTool: Graphlit screenshot web page tool
 ##### Description
-Accepts image URL as string.
-Prompts vision LLM and returns completion. Returns Markdown text from LLM completion.
+Screenshots web page from URL and describes web page with vision LLM.
+Returns Markdown description of screenshot and extracted Markdown text from image.
 
 ##### Parameters
 | Name | Type | Description |
