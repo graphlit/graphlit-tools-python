@@ -101,6 +101,7 @@ $env:GRAPHLIT_JWT_SECRET="your_secret_key_value"
 - [Content Ingestion](#content-ingestion)
 - [RAG](#rag)
 - [Data Retrieval](#data-retrieval)
+- [Content Generation](#content-generation)
 - [Image Description](#image-description)
 - [Data Extraction](#data-extraction)
 
