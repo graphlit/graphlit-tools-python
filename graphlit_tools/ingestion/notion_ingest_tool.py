@@ -56,14 +56,19 @@ class NotionIngestTool(BaseTool):
         if token is None:
             raise ToolException('Invalid Notion API key. Need to assign NOTION_API_KEY environment variable.')
 
+        database_id = os.environ['NOTION_DATABASE_ID']
+
+        if database_id is None:
+            raise ToolException('Invalid Notion database identifier. Need to assign NOTION_DATABASE_ID environment variable.')
+
         try:
             response = await self.graphlit.client.create_feed(
                 feed=input_types.FeedInput(
                     name='Notion Feed',
                     type=enums.FeedTypes.NOTION,
                     notion=input_types.NotionFeedPropertiesInput(
-                        type=enums.NotionTypes.DATABASE, # TODO: should we support PAGE?
-                        identifiers=[], # TODO: should this come from env var?
+                        type=enums.NotionTypes.DATABASE,
+                        identifiers=[database_id],
                         token=token,
                         readLimit=read_limit if read_limit is not None else 10
                     ),
