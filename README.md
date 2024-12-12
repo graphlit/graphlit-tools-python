@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/graphlit-tools.svg)](https://badge.fury.io/py/graphlit-tools)
+
 # Python Agent Tools for Graphlit Platform
 
 ## Overview
