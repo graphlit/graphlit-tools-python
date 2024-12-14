@@ -88,7 +88,7 @@ class BaseTool(BaseModel):
         """
 
     @property
-    def json_schema(self) -> dict:
+    def json_schema(self) -> Dict[str, Any]:
         """Get the tool's JSON schema."""
         return self.args_schema.model_json_schema()
 
