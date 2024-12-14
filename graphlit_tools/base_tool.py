@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Type
+from typing import Any, Type, Dict
 from pydantic import BaseModel
 
 class BaseTool(BaseModel):
@@ -91,3 +91,16 @@ class BaseTool(BaseModel):
     def json_schema(self) -> dict:
         """Get the tool's JSON schema."""
         return self.args_schema.model_json_schema()
+
+    def to_openai_tool(self) -> Dict[str, Any]:
+        """
+        Creates a tool definition compatible with OpenAI tool calling.
+
+        Returns:
+            dict: The tool definition for OpenAI.
+        """
+        return {
+            "name": self.name,
+            "description": self.description,
+            "parameters": self.json_schema
+        }
