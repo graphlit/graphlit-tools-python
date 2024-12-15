@@ -20,6 +20,7 @@ class RedditIngestInput(BaseModel):
 class RedditIngestTool(BaseTool):
     name: str = "Graphlit Reddit ingest tool"
     description: str = """Ingests posts from Reddit subreddit into knowledge base.
+    Optionally accepts search text for searching within the ingested posts. If search text was not provided, all ingested posts will be returned.
     Returns extracted Markdown text and metadata from Reddit posts."""
     args_schema: Type[BaseModel] = RedditIngestInput
 

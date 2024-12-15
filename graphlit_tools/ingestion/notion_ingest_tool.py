@@ -20,6 +20,7 @@ class NotionIngestInput(BaseModel):
 class NotionIngestTool(BaseTool):
     name: str = "Graphlit Notion ingest tool"
     description: str = """Ingests pages from Notion database into knowledge base.
+    Optionally accepts search text for searching within the ingested pages. If search text was not provided, all ingested pages will be returned.
     Returns extracted Markdown text and metadata from Notion pages."""
     args_schema: Type[BaseModel] = NotionIngestInput
 

@@ -14,14 +14,15 @@ logger = logging.getLogger(__name__)
 
 class RSSIngestInput(BaseModel):
     url: str = Field(description="RSS URL to be read and ingested into knowledge base")
-    search: Optional[str] = Field(description="Text to search for within ingested posts and/or transcripts", default=None)
+    search: Optional[str] = Field(description="Text to search for within ingested posts", default=None)
     read_limit: Optional[int] = Field(description="Maximum number of posts from RSS feed to be read", default=10)
 
 class RSSIngestTool(BaseTool):
     name: str = "Graphlit RSS ingest tool"
     description: str = """Ingests posts from RSS feed into knowledge base.
     For podcast RSS feeds, audio will be transcribed and ingested into knowledge base.
-    Returns extracted or transcribed Markdown text and metadata from RSS posts."""
+    Optionally accepts search text for searching within the ingested posts. If search text was not provided, all ingested posts will be returned.
+    Returns extracted Markdown text and metadata from RSS posts."""
     args_schema: Type[BaseModel] = RSSIngestInput
 
     graphlit: Graphlit = Field(None, exclude=True)

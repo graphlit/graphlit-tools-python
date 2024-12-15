@@ -22,6 +22,7 @@ class LinearIssueIngestTool(BaseTool):
     name: str = "Graphlit Linear ingest tool"
     description: str = """Ingests issues from Linear project into knowledge base.
     Accepts Linear project name.
+    Optionally accepts search text for searching within the ingested issues. If search text was not provided, all ingested issues will be returned.
     Returns extracted Markdown text and metadata from issues."""
     args_schema: Type[BaseModel] = LinearIssueIngestInput
 

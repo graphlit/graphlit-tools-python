@@ -24,6 +24,7 @@ class GitHubIssueIngestTool(BaseTool):
     description: str = """Ingests issues from GitHub repository into knowledge base.
     Accepts GitHub repository owner and repository name.
     For example, for GitHub repository (https://github.com/openai/tiktoken), 'openai' is the repository owner, and 'tiktoken' is the repository name.
+    Optionally accepts search text for searching within the ingested issues. If search text was not provided, all ingested issues will be returned.
     Returns extracted Markdown text and metadata from issues."""
     args_schema: Type[BaseModel] = GitHubIssueIngestInput
 

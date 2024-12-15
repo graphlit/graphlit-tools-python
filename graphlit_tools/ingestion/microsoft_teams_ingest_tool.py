@@ -22,6 +22,7 @@ class MicrosoftTeamsIngestInput(BaseModel):
 class MicrosoftTeamsIngestTool(BaseTool):
     name: str = "Graphlit Microsoft Teams ingest tool"
     description: str = """Ingests messages from Microsoft Teams channel into knowledge base.
+    Optionally accepts search text for searching within the ingested messages. If search text was not provided, all ingested messages will be returned.
     Returns extracted Markdown text and metadata from messages."""
     args_schema: Type[BaseModel] = MicrosoftTeamsIngestInput
 

@@ -20,6 +20,7 @@ class GoogleEmailIngestInput(BaseModel):
 class GoogleEmailIngestTool(BaseTool):
     name: str = "Graphlit Google Email ingest tool"
     description: str = """Ingests emails from Google Email account into knowledge base.
+    Optionally accepts search text for searching within the ingested emails. If search text was not provided, all ingested emails will be returned.
     Returns extracted Markdown text and metadata from emails."""
     args_schema: Type[BaseModel] = GoogleEmailIngestInput
 

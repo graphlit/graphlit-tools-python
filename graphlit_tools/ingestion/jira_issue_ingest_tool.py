@@ -23,6 +23,7 @@ class JiraIssueIngestTool(BaseTool):
     name: str = "Graphlit Jira ingest tool"
     description: str = """Ingests issues from Atlassian Jira into knowledge base.
     Accepts Atlassian Jira server URL and project name.
+    Optionally accepts search text for searching within the ingested issues. If search text was not provided, all ingested issues will be returned.
     Returns extracted Markdown text and metadata from issues."""
     args_schema: Type[BaseModel] = JiraIssueIngestInput
 

@@ -22,6 +22,7 @@ class DiscordIngestTool(BaseTool):
     name: str = "Graphlit Discord ingest tool"
     description: str = """Ingests messages from Discord channel into knowledge base.
     Accepts Discord channel name.
+    Optionally accepts search text for searching within the ingested messages. If search text was not provided, all ingested messages will be returned.
     Returns extracted Markdown text and metadata from messages."""
     args_schema: Type[BaseModel] = DiscordIngestInput
 

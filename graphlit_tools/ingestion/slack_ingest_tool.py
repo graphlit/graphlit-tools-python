@@ -22,6 +22,7 @@ class SlackIngestTool(BaseTool):
     name: str = "Graphlit Slack ingest tool"
     description: str = """Ingests messages from Slack channel into knowledge base.
     Accepts Slack channel name.
+    Optionally accepts search text for searching within the ingested messages. If search text was not provided, all ingested messages will be returned.
     Returns extracted Markdown text and metadata from messages."""
     args_schema: Type[BaseModel] = SlackIngestInput
 
