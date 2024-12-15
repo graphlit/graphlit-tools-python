@@ -17,9 +17,9 @@ class WebSearchInput(BaseModel):
 
 class WebSearchTool(BaseTool):
     name: str = "Graphlit web search tool"
-    description: str = """Accepts search query text as string.
-    Performs web search based on search query.
-    Returns Markdown text and metadata extracted from web pages."""
+    description: str = """Accepts search query as string.
+    Performs web search based on search query. Format the search query as what would be entered into a Google search.
+    Returns URL, title and relevant Markdown text from resulting web pages."""
     args_schema: Type[BaseModel] = WebSearchInput
 
     graphlit: Graphlit = Field(None, exclude=True)
