@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict, cast, Self
+from typing import Any, Optional, Dict, cast
 from schema import Schema
 from .base_tool import BaseTool
 
@@ -23,7 +23,7 @@ if GriptapeBaseTool:
         graphlit_tool: BaseTool
 
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> Self:
+        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
             if not isinstance(tool, BaseTool):
                 raise ValueError(f"Expected a Graphlit tool, got {type(tool)}")
 
@@ -60,7 +60,7 @@ else:
         """Fallback GriptapeConverter if griptape is not installed."""
 
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> Self:
+        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
             raise ImportError(
                 "GriptapeConverter requires the griptape package. "
                 "Install it using pip install graphlit-tools[griptape]."
