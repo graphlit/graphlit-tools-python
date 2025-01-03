@@ -18,7 +18,7 @@ if GriptapeBaseTool:
         graphlit_tool: BaseTool
 
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> f"Griptape{graphlit_tool.name}":
+        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
             if not isinstance(tool, BaseTool):
                 raise ValueError(f"Expected a Graphlit tool, got {type(tool)}")
 
@@ -29,6 +29,7 @@ if GriptapeBaseTool:
 
             # Create an instance of GriptapeConverter
             instance = cls(name=graphlit_tool.name, **kwargs)
+            instance.graphlit_tool = graphlit_tool
 
             # Define the generate method dynamically
             def generate(self, params: dict[str, Any]) -> TextArtifact:
@@ -52,7 +53,9 @@ if GriptapeBaseTool:
 else:
     class GriptapeConverter:
         """Fallback GriptapeConverter if griptape is not installed."""
-        def __init__(self, *args, **kwargs):
+        
+        @classmethod
+        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
             raise ImportError(
                 "GriptapeConverter requires the griptape package. "
                 "Install it using pip install graphlit-tools[griptape]."
