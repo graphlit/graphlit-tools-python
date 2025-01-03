@@ -25,11 +25,17 @@ if GriptapeBaseTool:
             if tool.args_schema is None:
                 raise ValueError("Invalid arguments JSON schema.")
 
+            # Create an instance of GriptapeConverter
+            instance = cls(name=tool.name, **kwargs)
+
+            # Define the generate method dynamically
             def generate(self, params: dict[str, Any]) -> TextArtifact:
                 return TextArtifact(str(tool.run(**params)))
 
+            # Convert the tool's schema
             tool_schema = Schema(tool.json_schema)
 
+            # Decorate the generate method
             decorated_generate = activity(
                 config={
                     "description": tool.description,
@@ -37,16 +43,10 @@ if GriptapeBaseTool:
                 }
             )(generate)
 
-            new_cls = type(
-                "GriptapeConverter",
-                (cls,),
-                {"generate": decorated_generate},
-            )
+            # Attach the dynamically created method to the instance
+            setattr(instance, "generate", decorated_generate)
 
-            return new_cls(
-                name=tool.name,
-                **kwargs,
-            )
+            return instance
 else:
     class GriptapeConverter:
         """Fallback GriptapeConverter if griptape is not installed."""
