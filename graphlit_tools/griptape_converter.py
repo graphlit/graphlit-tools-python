@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any, Optional, Dict, cast, Self
 from schema import Schema
 from .base_tool import BaseTool
 
@@ -15,10 +15,15 @@ if GriptapeBaseTool:
     class GriptapeConverter(GriptapeBaseTool):
         """Tool to convert Graphlit tools into Griptape tools."""
 
+        # Explicitly declare attributes for type checkers
+        name: str
+        input_memory: Optional[Any] = None
+        output_memory: Optional[Any] = None
+
         graphlit_tool: BaseTool
 
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
+        def from_tool(cls, tool: Any, **kwargs: Any) -> Self:
             if not isinstance(tool, BaseTool):
                 raise ValueError(f"Expected a Graphlit tool, got {type(tool)}")
 
@@ -32,7 +37,7 @@ if GriptapeBaseTool:
             instance.graphlit_tool = graphlit_tool
 
             # Define the generate method dynamically
-            def generate(self, params: dict[str, Any]) -> TextArtifact:
+            def generate(self, params: Dict[str, Any]) -> TextArtifact:
                 return TextArtifact(str(self.graphlit_tool.run(**params)))
 
             # Convert the tool's schema
@@ -53,9 +58,9 @@ if GriptapeBaseTool:
 else:
     class GriptapeConverter:
         """Fallback GriptapeConverter if griptape is not installed."""
-        
+
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
+        def from_tool(cls, tool: Any, **kwargs: Any) -> Self:
             raise ImportError(
                 "GriptapeConverter requires the griptape package. "
                 "Install it using pip install graphlit-tools[griptape]."
