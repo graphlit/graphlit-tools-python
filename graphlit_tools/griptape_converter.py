@@ -16,7 +16,7 @@ if GriptapeBaseTool:
         """Tool to convert Graphlit tools into Griptape tools."""
 
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
+        def from_tool(cls, tool: Any, **kwargs: Any) -> f"Griptape{tool.name}":
             if not isinstance(tool, BaseTool):
                 raise ValueError(f"Expected a Graphlit tool, got {type(tool)}")
 
