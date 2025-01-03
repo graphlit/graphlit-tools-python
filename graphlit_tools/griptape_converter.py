@@ -15,30 +15,32 @@ if GriptapeBaseTool:
     class GriptapeConverter(GriptapeBaseTool):
         """Tool to convert Graphlit tools into Griptape tools."""
 
+        graphlit_tool: BaseTool
+
         @classmethod
-        def from_tool(cls, tool: Any, **kwargs: Any) -> f"Griptape{tool.name}":
+        def from_tool(cls, tool: Any, **kwargs: Any) -> f"Griptape{graphlit_tool.name}":
             if not isinstance(tool, BaseTool):
                 raise ValueError(f"Expected a Graphlit tool, got {type(tool)}")
 
-            tool = cast(BaseTool, tool)
+            graphlit_tool = cast(BaseTool, tool)
 
-            if tool.args_schema is None:
+            if graphlit_tool.args_schema is None:
                 raise ValueError("Invalid arguments JSON schema.")
 
             # Create an instance of GriptapeConverter
-            instance = cls(name=tool.name, **kwargs)
+            instance = cls(name=graphlit_tool.name, **kwargs)
 
             # Define the generate method dynamically
             def generate(self, params: dict[str, Any]) -> TextArtifact:
-                return TextArtifact(str(tool.run(**params)))
+                return TextArtifact(str(self.graphlit_tool.run(**params)))
 
             # Convert the tool's schema
-            tool_schema = Schema(tool.json_schema)
+            tool_schema = Schema(graphlit_tool.json_schema)
 
             # Decorate the generate method
             decorated_generate = activity(
                 config={
-                    "description": tool.description,
+                    "description": graphlit_tool.description,
                     "schema": tool_schema,
                 }
             )(generate)
