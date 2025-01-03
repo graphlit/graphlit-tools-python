@@ -15,11 +15,6 @@ if GriptapeBaseTool:
     class GriptapeConverter(GriptapeBaseTool):
         """Tool to convert Graphlit tools into Griptape tools."""
 
-        # Explicitly declare attributes for type checkers
-        name: str
-        input_memory: Optional[Any] = None
-        output_memory: Optional[Any] = None
-
         graphlit_tool: BaseTool
 
         @classmethod
