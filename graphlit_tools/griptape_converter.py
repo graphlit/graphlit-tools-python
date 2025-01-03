@@ -7,33 +7,13 @@ GriptapeBaseTool: Any = None
 try:
     from griptape.tools import BaseTool as GriptapeBaseTool
     from griptape.utils.decorators import activity
-    from griptape.artifacts import TextArtifact    
+    from griptape.artifacts import TextArtifact
 except ImportError:
     GriptapeBaseTool = None
 
 if GriptapeBaseTool:
     class GriptapeConverter(GriptapeBaseTool):
         """Tool to convert Graphlit tools into Griptape tools."""
-
-        graphlit_tool: Any
-
-        def _run(
-            self,
-            *args: Any,
-            **kwargs: Any,
-        ) -> Any:
-            tool = cast(BaseTool, self.graphlit_tool)
-
-            return tool.run(*args, **kwargs)
-
-        async def _arun(
-            self,
-            *args: Any,
-            **kwargs: Any,
-        ) -> Any:
-            tool = cast(BaseTool, self.graphlit_tool)
-
-            return await tool.arun(*args, **kwargs)
 
         @classmethod
         def from_tool(cls, tool: Any, **kwargs: Any) -> "GriptapeConverter":
@@ -46,7 +26,7 @@ if GriptapeBaseTool:
                 raise ValueError("Invalid arguments JSON schema.")
 
             def generate(self, params: dict[str, Any]) -> TextArtifact:
-                return TextArtifact(str(self.graphlit_tool.run(**params)))
+                return TextArtifact(str(tool.run(**params)))
 
             tool_schema = Schema(tool.json_schema)
 
@@ -58,14 +38,13 @@ if GriptapeBaseTool:
             )(generate)
 
             new_cls = type(
-                f"{tool.name.capitalize()}GriptapeConverter",
+                "GriptapeConverter",
                 (cls,),
-                {"graphlit_tool": tool, "generate": decorated_generate},
+                {"generate": decorated_generate},
             )
 
             return new_cls(
                 name=tool.name,
-                graphlit_tool=tool,
                 **kwargs,
             )
 else:
