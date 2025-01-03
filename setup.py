@@ -18,7 +18,7 @@ setup(
         "crewai": ["crewai-tools"],  # Extras for CrewAI support
         "griptape": ["griptape"]  # Extras for Griptape support
     },
-    python_requires='>=3.6',
+    python_requires='>=3.12',
     author='Unstruk Data Inc.',
     author_email='questions@graphlit.com',
     description='Graphlit Agent Tools',
