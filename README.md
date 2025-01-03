@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Graphlit Agent Tools for Python enables easy interaction with agent frameworks such as [CrewAI](https://crewai.com), allowing developers to easily integrate the Graphlit service with agentic workflows. This document outlines the setup process and provides a basic example of using the tools.
+The Graphlit Agent Tools for Python enables easy interaction with agent frameworks such as [CrewAI](https://crewai.com) or [Griptape](https://www.griptape.ai/), allowing developers to easily integrate the Graphlit service with agentic workflows. This document outlines the setup process and provides a basic example of using the tools.
 
 ## Prerequisites
 
@@ -21,18 +21,47 @@ To install the Graphlit Agent Tools with CrewAI, use pip:
 pip install graphlit-tools[crewai]
 ```
 
+To install the Graphlit Agent Tools with Griptape, use pip:
+
+```bash
+pip install graphlit-tools[griptape]
+```
+
 ### Using the Graphlit agent tools
 
 We have example Google Colab notebooks using CrewAI, which provide an example for [analyzing the web marketing strategy of a company](https://colab.research.google.com/github/graphlit/graphlit-samples/blob/main/python/Notebook%20Examples/Graphlit_2024_12_07_CrewAI_Web_Marketing_Analyzer.ipynb), and for [structured data extraction of products from scraped web pages](https://colab.research.google.com/github/graphlit/graphlit-samples/blob/main/python/Notebook%20Examples/Graphlit_2024_12_08_CrewAI_Product_Data_Extraction.ipynb).
 
 Once you have configured the Graphlit client, as shown below, you will pass the client to the tool constructor.
 
-For use in CrewAI, you will need to convert the tool to the CrewAI tool schema with the `CrewAIConverter.from_tool()` function.  We will provide support for additional agent frameworks, such as LangGraph and AutoGen in future.
+For use in CrewAI, you will need to convert the tool to the CrewAI tool schema with the `CrewAIConverter.from_tool()` function.  
+
+For use in Griptape, you will need to convert the tool to the CrewAI tool schema with the `GriptapeConverter.from_tool()` function.
+
+We will provide support for additional agent frameworks, such as LangGraph and AutoGen in future.
+
+#### CrewAI
 
 ```python
 from graphlit_tools import WebSearchTool, CrewAIConverter
 
 web_search_tool = CrewAIConverter.from_tool(WebSearchTool(graphlit))
+
+web_search_agent = Agent(
+    role="Web Researcher",
+    goal="Find the {company} website.",
+    backstory="",
+    verbose=True,
+    allow_delegation=False,
+    tools=[web_search_tool],
+)
+```
+
+#### Griptape
+
+```python
+from graphlit_tools import WebSearchTool, CrewAIConverter
+
+web_search_tool = GriptapeConverter.from_tool(WebSearchTool(graphlit))
 
 web_search_agent = Agent(
     role="Web Researcher",

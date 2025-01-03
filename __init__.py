@@ -33,5 +33,6 @@ from .graphlit_tools import (
     MicrosoftTeamsIngestTool,
     DiscordIngestTool,
     SlackIngestTool,
-    CrewAIConverter
+    CrewAIConverter,
+    GriptapeConverter,
 )

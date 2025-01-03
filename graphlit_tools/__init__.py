@@ -1,5 +1,6 @@
 from .base_tool import BaseTool
 from .crewai_converter import CrewAIConverter
+from .griptape_converter import GriptapeConverter
 from .exceptions import ToolException
 from .retrieval.content_retrieval_tool import ContentRetrievalTool
 from .retrieval.person_retrieval_tool import PersonRetrievalTool
