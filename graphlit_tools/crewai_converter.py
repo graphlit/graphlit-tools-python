@@ -4,7 +4,7 @@ from .base_tool import BaseTool
 CrewAIBaseTool: Any = None
 
 try:
-    from crewai_tools.tools import BaseTool as CrewAIBaseTool
+    from crewai.tools import BaseTool as CrewAIBaseTool
 except ImportError:
     CrewAIBaseTool = None
 
