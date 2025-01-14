@@ -51,9 +51,9 @@ if CrewAIBaseTool:
             )
 else:
     class CrewAIConverter:
-        """Fallback CrewAIConverter if crewai_tools is not installed."""
+        """Fallback CrewAIConverter if crewai is not installed."""
         def __init__(self, *args, **kwargs):
             raise ImportError(
-                "CrewAIConverter requires the crewai_tools package. "
+                "CrewAIConverter requires the crewai package. "
                 "Install it using pip install graphlit-tools[crewai]."
             )

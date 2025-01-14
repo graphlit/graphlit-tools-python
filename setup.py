@@ -15,7 +15,7 @@ setup(
         'graphlit-client'        
     ],
     extras_require={
-        "crewai": ["crewai-tools"],  # Extras for CrewAI support
+        "crewai": ["crewai"],  # Extras for CrewAI support
         "griptape": ["griptape"]  # Extras for Griptape support
     },
     python_requires='>=3.10',
