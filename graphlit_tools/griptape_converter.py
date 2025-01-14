@@ -1,10 +1,10 @@
 from typing import Any, Dict, cast
-from schema import Schema
 from .base_tool import BaseTool
 
 GriptapeBaseTool: Any = None
 
 try:
+    from schema import Schema
     from griptape.tools import BaseTool as GriptapeBaseTool
     from griptape.utils.decorators import activity
     from griptape.artifacts import TextArtifact
