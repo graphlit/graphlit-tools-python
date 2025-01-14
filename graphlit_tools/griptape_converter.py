@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict, cast
+from typing import Any, Dict, cast
 from schema import Schema
 from .base_tool import BaseTool
 
